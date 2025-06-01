@@ -1,5 +1,7 @@
 package models
 
+import "github.com/google/uuid"
+
 type ResponseDataSuccess struct {
 	Status   string `json:"status"`
 	Response string `json:"response"`
@@ -11,6 +13,6 @@ type ResponseDataError struct {
 }
 
 type AuthResponse struct {
-	Status string `json:"status"`
-	Token  string `json:"token"`
+	Status string    `json:"status"`
+	Token  uuid.UUID `json:"token"`
 }

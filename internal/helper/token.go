@@ -2,21 +2,19 @@ package helper
 
 import (
 	"database/sql"
-	"encoding/base64"
-	"strconv"
 	"time"
 
 	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/google/uuid"
 )
 
-func createToken(user string, role string) string {
-	t := time.Now().Unix()
-	c := strconv.FormatInt(t, 10) + "," + user + "," + role
+func createToken() uuid.UUID {
+	uid := uuid.New()
 
-	return base64.StdEncoding.EncodeToString([]byte(c))
+	return uid
 }
 
-func SessionToken(sql *sql.DB, us string, pas string) string {
+func SessionToken(sql *sql.DB, us string, pas string) uuid.UUID {
 	var user models.User
 	tm := time.Now()
 	h := tm.Add(6 * time.Hour).Format("2006-01-02 15:04:05")
@@ -25,7 +23,7 @@ func SessionToken(sql *sql.DB, us string, pas string) string {
 		panic(err.Error())
 	}
 
-	ut := createToken(user.Username, user.Role)
+	ut := createToken()
 	var i int
 	err = sql.QueryRow("SELECT COUNT(id) FROM session_token WHERE session_token.users_id = ?", user.ID).Scan(&i)
 	if err != nil {
