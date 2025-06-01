@@ -14,8 +14,12 @@ func main() {
 
 	defer db.Close()
 
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		controllers.LoginUser(w, r, db, "/login")
+	http.HandleFunc("/user/auth", func(w http.ResponseWriter, r *http.Request) {
+		controllers.AuthUser(w, r, db, "/user/auth")
+	})
+
+	http.HandleFunc("/user/logout", func(w http.ResponseWriter, r *http.Request) {
+		controllers.UserLogout(w, r, db, "/user/logout")
 	})
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))

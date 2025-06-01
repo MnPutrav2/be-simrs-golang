@@ -11,7 +11,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/models"
 )
 
-func LoginUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// check client request method
 	if !helper.RequestNotAllowed(w, r, "POST") {
 		fmt.Println(helper.Log("method not allowed : 400", path))
@@ -53,5 +53,5 @@ func LoginUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string)
 		panic(err.Error())
 	}
 
-	helper.ResponseAuthSuccess(w, "/login", s)
+	helper.ResponseAuthSuccess(w, path, s)
 }

@@ -2,6 +2,8 @@ package helper
 
 import (
 	"database/sql"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/MnPutrav2/be-simrs-golang/models"
@@ -46,4 +48,31 @@ func SessionToken(sql *sql.DB, us string, pas string) uuid.UUID {
 	}
 
 	return ut
+}
+
+func CheckAuthorization(w http.ResponseWriter, path string, db *sql.DB, auth string) bool {
+	split := strings.Split(auth, " ")
+
+	if split[0] == "" && split[1] == "" {
+		ResponseError(w, "unauthorization", "unauthorization : 400", 400, path)
+		return false
+	}
+
+	if split[0] != "Bearer" {
+		ResponseError(w, "authorization method not allowed", "authorization method not allowed : 400", 400, path)
+		return false
+	}
+
+	var q int
+	err := db.QueryRow("SELECT COUNT(session_token.id) FROM session_token WHERE session_token.token = ?", split[1]).Scan(&q)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if q == 0 {
+		ResponseError(w, "unauthorization", "unauthorization : 400", 400, path)
+		return false
+	}
+
+	return true
 }

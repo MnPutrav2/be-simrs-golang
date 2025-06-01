@@ -30,3 +30,9 @@ func ResponseAuthSuccess(w http.ResponseWriter, path string, s []byte) {
 	w.Write(s)
 	fmt.Println(Log("success login : 200", path))
 }
+
+func ResponseSuccess(w http.ResponseWriter, path string, s []byte) {
+	w.WriteHeader(http.StatusOK)
+	w.Write(s)
+	fmt.Println(Log("success logout : 200", path))
+}
