@@ -6,7 +6,7 @@
 
 ## Run Server
 ```bash
-go run cmd/simrs/main.go
+go run cmd/server/main.go
 ```
 
 ## Run Worker
