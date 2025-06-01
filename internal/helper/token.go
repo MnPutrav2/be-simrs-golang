@@ -51,15 +51,13 @@ func SessionToken(sql *sql.DB, us string, pas string) uuid.UUID {
 }
 
 func CheckAuthorization(w http.ResponseWriter, path string, db *sql.DB, auth string) bool {
-	split := strings.Split(auth, " ")
+	split := strings.SplitN(auth, " ", 2)
 
-	if split[0] == "" && split[1] == "" {
-		ResponseError(w, "unauthorization", "unauthorization : 400", 400, path)
+	if len(split) != 2 || split[0] != "Bearer" {
 		return false
 	}
 
 	if split[0] != "Bearer" {
-		ResponseError(w, "authorization method not allowed", "authorization method not allowed : 400", 400, path)
 		return false
 	}
 
@@ -70,7 +68,6 @@ func CheckAuthorization(w http.ResponseWriter, path string, db *sql.DB, auth str
 	}
 
 	if q == 0 {
-		ResponseError(w, "unauthorization", "unauthorization : 400", 400, path)
 		return false
 	}
 

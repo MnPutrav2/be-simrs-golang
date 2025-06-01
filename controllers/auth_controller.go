@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -12,9 +11,12 @@ import (
 )
 
 func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
-	// check client request method
-	if !helper.RequestNotAllowed(w, r, "POST") {
-		fmt.Println(helper.Log("method not allowed : 400", path))
+	if helper.Cors(w, r) {
+		return
+	}
+
+	if r.Method != "POST" {
+		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
 		return
 	}
 

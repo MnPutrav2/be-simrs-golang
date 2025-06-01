@@ -1,36 +1,24 @@
 # API DOCS
 
-## USER LOGIN /login
+## User Logout
 
-## Request Body
+## Request Header
 ```bash
-{
-	"username": "",
-	"password" : ""
-}
+"Authorization: Bearer xxx"
 ```
-- password max 10 character
 
 ## Success : 200
 ```bash
 {
 	"status": "success",
-	"token": ""
+	"response": "logout"
 }
 ```
 
-## Error Username or Password : 400
+## Error token : 400
 ```bash
 {
 	"status":  "failed",
-	"errors":  "Login failed : Check your username or password"
-}
-```
-
-## Error empty request body : 400
-```bash
-{
-	"status":  "failed",
-	"errors":  "No JSON data"
+	"errors":  "unauthorization"
 }
 ```
