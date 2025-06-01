@@ -14,6 +14,7 @@ type UserAccount struct {
 type UserTokenData struct {
 	ID       int
 	UserID   string
+	Token    string
 	CreateAt string
 	Expired  string
 }

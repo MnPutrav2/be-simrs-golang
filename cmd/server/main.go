@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/controllers"
@@ -17,6 +18,6 @@ func main() {
 		controllers.LoginUser(w, r, db, "/login")
 	})
 
-	helper.LogWorker("[INFO] server runing in port 8080")
+	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)
 }

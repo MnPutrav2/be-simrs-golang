@@ -9,3 +9,8 @@ type ResponseDataError struct {
 	Status string `json:"status"`
 	Errors string `json:"errors"`
 }
+
+type AuthResponse struct {
+	Status string `json:"status"`
+	Token  string `json:"token"`
+}

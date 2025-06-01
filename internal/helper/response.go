@@ -2,6 +2,7 @@ package helper
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/models"
@@ -21,5 +22,11 @@ func ResponseError(w http.ResponseWriter, m string, log string, c int, path stri
 
 	w.WriteHeader(c)
 	w.Write(data)
-	Log(log, path)
+	fmt.Println(Log(log, path))
+}
+
+func ResponseAuthSuccess(w http.ResponseWriter, path string, s []byte) {
+	w.WriteHeader(http.StatusOK)
+	w.Write(s)
+	fmt.Println(Log("success login : 200", path))
 }

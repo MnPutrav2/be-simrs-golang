@@ -54,7 +54,7 @@ func CheckAvailableToken(db *sql.DB) {
 
 			m := "session token user_id : " + exp.UserID + " Deleted"
 
-			helper.LogWorker(m)
+			fmt.Println(helper.LogWorker(m))
 		}
 	}
 }

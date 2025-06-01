@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -10,15 +11,10 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/models"
 )
 
-type token struct {
-	Status string `json:"status"`
-	Token  string `json:"token"`
-}
-
 func LoginUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// check client request method
 	if !helper.RequestNotAllowed(w, r, "POST") {
-		helper.Log("method not allowed : 400", path)
+		fmt.Println(helper.Log("method not allowed : 400", path))
 		return
 	}
 
@@ -52,12 +48,10 @@ func LoginUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string)
 	}
 
 	// success
-	s, err := json.Marshal(token{Status: "success", Token: helper.SessionToken(sql, account.Username, account.Password)})
+	s, err := json.Marshal(models.AuthResponse{Status: "success", Token: helper.SessionToken(sql, account.Username, account.Password)})
 	if err != nil {
 		panic(err.Error())
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(s)
-	helper.Log("success login : 200", path)
+	helper.ResponseAuthSuccess(w, "/login", s)
 }
