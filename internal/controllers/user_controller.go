@@ -13,7 +13,9 @@ import (
 
 func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
-	pkg.CheckRequestHeader(w, r, sql, path, "GET")
+	if !pkg.CheckRequestHeader(w, r, sql, path, "GET") {
+		return
+	}
 
 	// Check Header
 	auth := r.Header.Get("Authorization")

@@ -1,5 +1,9 @@
 # SIMRS
 
+## Techstack
+- Golang : https://go.dev/
+- MySQL : https://www.mysql.com/
+
 ## Library
 - MySQL driver : https://github.com/go-sql-driver/mysql
 - ENV : https://github.com/joho/godotenv

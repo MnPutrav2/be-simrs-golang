@@ -11,7 +11,9 @@ import (
 )
 
 func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
-	pkg.CheckRequestHeader(w, r, sql, path, "POST")
+	if !pkg.CheckRequestHeader(w, r, sql, path, "POST") {
+		return
+	}
 
 	// get client request body
 	account, err := helper.GetRequestBodyUserAccount(w, r, path)
