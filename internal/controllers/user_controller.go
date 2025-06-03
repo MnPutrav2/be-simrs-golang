@@ -13,16 +13,7 @@ import (
 
 func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
-	// Check Method
-	if pkg.Cors(w, r) {
-		return
-	}
-
-	if r.Method != "GET" {
-		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
-		return
-	}
-	// Check Method
+	pkg.CheckRequestHeader(w, r, sql, path, "GET")
 
 	// Check Header
 	auth := r.Header.Get("Authorization")
@@ -66,16 +57,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
-	// Check Method
-	if pkg.Cors(w, r) {
-		return
-	}
-
-	if r.Method != "DELETE" {
-		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
-		return
-	}
-	// Check Method
+	pkg.CheckRequestHeader(w, r, sql, path, "DELETE")
 
 	// Check Header
 	auth := r.Header.Get("Authorization")

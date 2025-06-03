@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
@@ -12,27 +11,12 @@ import (
 )
 
 func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
-	if pkg.Cors(w, r) {
-		return
-	}
-
-	if r.Method != "POST" {
-		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
-		return
-	}
+	pkg.CheckRequestHeader(w, r, sql, path, "POST")
 
 	// get client request body
-	body, err := io.ReadAll(r.Body)
+	account, err := helper.GetRequestBodyUserAccount(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, "Error encoding JSON", "failed encoding data : 500", 500, path)
-		return
-	}
-
-	// encoding client request body
-	var account models.UserAccount
-	err = json.Unmarshal(body, &account)
-	if err != nil {
-		helper.ResponseError(w, "No JSON data", "empty client request body : 400", 400, path)
+		helper.ResponseError(w, "empty request body", "empty request body : 400", 400, path)
 		return
 	}
 
