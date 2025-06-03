@@ -22,6 +22,10 @@ func main() {
 		controllers.GetUserStatus(w, r, db, "/user/status")
 	})
 
+	http.HandleFunc("/user/pages", func(w http.ResponseWriter, r *http.Request) {
+		controllers.GetUserPages(w, r, db, "/user/pages")
+	})
+
 	http.HandleFunc("/user/logout", func(w http.ResponseWriter, r *http.Request) {
 		controllers.UserLogout(w, r, db, "/user/logout")
 	})

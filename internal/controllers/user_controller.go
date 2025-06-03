@@ -59,7 +59,9 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
-	pkg.CheckRequestHeader(w, r, sql, path, "DELETE")
+	if !pkg.CheckRequestHeader(w, r, sql, path, "DELETE") {
+		return
+	}
 
 	// Check Header
 	auth := r.Header.Get("Authorization")
@@ -88,4 +90,66 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	}
 
 	helper.ResponseSuccess(w, "client logout : 200", path, s)
+}
+
+type Pages struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+}
+
+func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, "GET") {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	var id int
+
+	err := sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = ?", split[1]).Scan(&id)
+	if err != nil {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	result, err := sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.users_id = ?", id)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var pageList []Pages
+
+	for result.Next() {
+		var p Pages
+
+		err := result.Scan(&p.Name, &p.Path)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		pageList = append(pageList, p)
+	}
+
+	s, err := json.Marshal(pageList)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	helper.ResponseSuccess(w, "get pages : 200", path, s)
+
 }
