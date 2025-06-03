@@ -9,4 +9,4 @@ internal/models/satu_sehat_encounter_model.go
 internal/pkg/satu_sehat_token.go
 
 cmd/test.go
-api
+api_test

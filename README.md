@@ -5,9 +5,9 @@
 - ENV : https://github.com/joho/godotenv
 - uuID : https://github.com/google/uuid
 
-## Run Server
+## Run API
 ```bash
-go run cmd/server/main.go
+go run cmd/api/main.go
 ```
 
 ## Run Worker
