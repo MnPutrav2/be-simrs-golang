@@ -18,6 +18,10 @@ func main() {
 		controllers.AuthUser(w, r, db, "/user/auth")
 	})
 
+	http.HandleFunc("/user/status", func(w http.ResponseWriter, r *http.Request) {
+		controllers.GetUserStatus(w, r, db, "/user/status")
+	})
+
 	http.HandleFunc("/user/logout", func(w http.ResponseWriter, r *http.Request) {
 		controllers.UserLogout(w, r, db, "/user/logout")
 	})

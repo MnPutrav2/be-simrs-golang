@@ -25,14 +25,8 @@ func ResponseError(w http.ResponseWriter, m string, log string, c int, path stri
 	fmt.Println(Log(log, path))
 }
 
-func ResponseAuthSuccess(w http.ResponseWriter, path string, s []byte) {
+func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(s)
-	fmt.Println(Log("success login : 200", path))
-}
-
-func ResponseSuccess(w http.ResponseWriter, path string, s []byte) {
-	w.WriteHeader(http.StatusOK)
-	w.Write(s)
-	fmt.Println(Log("success logout : 200", path))
+	fmt.Println(Log(m, path))
 }

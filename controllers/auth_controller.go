@@ -55,5 +55,5 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) 
 		panic(err.Error())
 	}
 
-	helper.ResponseAuthSuccess(w, path, s)
+	helper.ResponseSuccess(w, "client login : 200", path, s)
 }
