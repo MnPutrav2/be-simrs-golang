@@ -1,5 +1,6 @@
 # Configuration
 .env
+.gitignore
 
 # Models
 internal/models/satu_sehat_token_model.go
