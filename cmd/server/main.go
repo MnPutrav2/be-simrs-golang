@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/MnPutrav2/be-simrs-golang/controllers"
 	"github.com/MnPutrav2/be-simrs-golang/internal/config"
+	"github.com/MnPutrav2/be-simrs-golang/internal/controllers"
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 )
 

@@ -7,13 +7,14 @@ import (
 	"strings"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
-	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
 func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
 	// Check Method
-	if helper.Cors(w, r) {
+	if pkg.Cors(w, r) {
 		return
 	}
 
@@ -25,7 +26,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 	// Check Header
 	auth := r.Header.Get("Authorization")
-	if !helper.CheckAuthorization(w, path, sql, auth) {
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
 		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
@@ -66,7 +67,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
 	// ---- Needed for every request ---
 	// Check Method
-	if helper.Cors(w, r) {
+	if pkg.Cors(w, r) {
 		return
 	}
 
@@ -78,7 +79,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 
 	// Check Header
 	auth := r.Header.Get("Authorization")
-	if !helper.CheckAuthorization(w, path, sql, auth) {
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
 		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}

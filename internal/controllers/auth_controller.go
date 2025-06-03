@@ -7,11 +7,12 @@ import (
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
-	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
 func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
-	if helper.Cors(w, r) {
+	if pkg.Cors(w, r) {
 		return
 	}
 
@@ -50,7 +51,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) 
 	}
 
 	// success
-	s, err := json.Marshal(models.AuthResponse{Status: "success", Token: helper.SessionToken(sql, account.Username, account.Password)})
+	s, err := json.Marshal(models.AuthResponse{Status: "success", Token: pkg.SessionToken(sql, account.Username, account.Password)})
 	if err != nil {
 		panic(err.Error())
 	}

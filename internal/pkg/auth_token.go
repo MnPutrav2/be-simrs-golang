@@ -1,4 +1,4 @@
-package helper
+package pkg
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 	"github.com/google/uuid"
 )
 

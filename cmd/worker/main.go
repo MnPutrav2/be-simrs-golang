@@ -7,7 +7,7 @@ import (
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/config"
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
-	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 )
 
 type Exp struct {

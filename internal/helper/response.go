@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/MnPutrav2/be-simrs-golang/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 )
 
 func ResponseError(w http.ResponseWriter, m string, log string, c int, path string) {
