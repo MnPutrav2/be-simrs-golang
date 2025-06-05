@@ -2,12 +2,12 @@
 
 ## User Logout /user/logout
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Success : 200
+### Success : 200
 ```bash
 {
 	"status": "success",
@@ -15,7 +15,7 @@
 }
 ```
 
-## Error Empty Token : 400
+### Error Empty Token : 400
 ```bash
 {
 	"status":  "failed",
@@ -23,7 +23,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",
@@ -33,12 +33,12 @@
 
 ## User Status /user/status
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Success : 200
+### Success : 200
 ```bash
 {
     "employee_id": "",
@@ -47,7 +47,7 @@
 }
 ```
 
-## Error Empty Token : 400
+### Error Empty Token : 400
 ```bash
 {
 	"status":  "failed",
@@ -55,7 +55,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",
@@ -65,12 +65,12 @@
 
 ## User Pages /user/pages
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Success : 200
+### Success : 200
 ```bash
 [
     {
@@ -84,7 +84,7 @@
 ]
 ```
 
-## Error Empty Token : 400
+### Error Empty Token : 400
 ```bash
 {
 	"status":  "failed",
@@ -92,7 +92,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",

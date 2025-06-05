@@ -2,12 +2,12 @@
 
 ## Create Patient /patient/create
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Request Body
+### Request Body
 ```bash
 {
   "medical_record": "000004",
@@ -32,7 +32,7 @@
 }
 ```
 
-## Success : 200
+### Success : 200
 ```bash
 {
     "status": "success",
@@ -40,7 +40,7 @@
 }
 ```
 
-## Error Duplicate Data : 400
+### Error Duplicate Data : 400
 ```bash
 {
     "status": "failed",
@@ -48,7 +48,7 @@
 }
 ```
 
-## Error empty request body : 400
+### Error empty request body : 400
 ```bash
 {
 	"status":  "failed",
@@ -56,7 +56,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",
@@ -66,16 +66,16 @@
 
 ## Get Patient /patient/get
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Params
+### Params
 - limit : limit data
 - search : search data from medical_record or patient name
 
-## Success : 200
+### Success : 200
 ```bash
 [
     {
@@ -102,7 +102,7 @@
 ]
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",
@@ -112,15 +112,15 @@
 
 ## Delete Patient /patient/delete
 
-## Request Header
+### Request Header
 ```bash
 "Authorization: Bearer xxx"
 ```
 
-## Params
+### Params
 - mr : data medical_record patient
 
-## Success : 200
+### Success : 200
 ```bash
 {
 	"status":"success",
@@ -128,7 +128,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",

@@ -2,7 +2,7 @@
 
 ## User Login /login
 
-## Request Body
+### Request Body
 ```bash
 {
 	"username": "",
@@ -11,7 +11,7 @@
 ```
 - password max 10 character
 
-## Success : 200
+### Success : 200
 ```bash
 {
 	"status": "success",
@@ -19,7 +19,7 @@
 }
 ```
 
-## Error Username or Password : 400
+### Error Username or Password : 400
 ```bash
 {
 	"status":  "failed",
@@ -27,7 +27,7 @@
 }
 ```
 
-## Error empty request body : 400
+### Error empty request body : 400
 ```bash
 {
 	"status":  "failed",
@@ -35,7 +35,7 @@
 }
 ```
 
-## Error Method Not Allowed : 400
+### Error Method Not Allowed : 400
 ```bash
 {
     "status": "failed",
