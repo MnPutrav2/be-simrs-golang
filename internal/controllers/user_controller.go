@@ -54,7 +54,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "get user status : 200", path, s)
+	helper.ResponseSuccess(w, "get user status : 200", path, s, 200)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
@@ -89,7 +89,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "client logout : 200", path, s)
+	helper.ResponseSuccess(w, "client logout : 200", path, s, 200)
 }
 
 type Pages struct {
@@ -150,6 +150,6 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "get pages : 200", path, s)
+	helper.ResponseSuccess(w, "get pages : 200", path, s, 200)
 
 }

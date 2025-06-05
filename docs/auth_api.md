@@ -1,6 +1,6 @@
 # API DOCS
 
-## USER LOGIN /login
+## User Login /login
 
 ## Request Body
 ```bash
@@ -32,5 +32,13 @@
 {
 	"status":  "failed",
 	"errors":  "No JSON data"
+}
+```
+
+## Error Method Not Allowed : 400
+```bash
+{
+    "status": "failed",
+    "errors": "method not allowed"
 }
 ```

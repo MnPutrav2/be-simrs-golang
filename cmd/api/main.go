@@ -14,6 +14,8 @@ func main() {
 
 	defer db.Close()
 
+	// User API
+
 	http.HandleFunc("/user/auth", func(w http.ResponseWriter, r *http.Request) {
 		controllers.AuthUser(w, r, db, "/user/auth")
 	})
@@ -28,6 +30,20 @@ func main() {
 
 	http.HandleFunc("/user/logout", func(w http.ResponseWriter, r *http.Request) {
 		controllers.UserLogout(w, r, db, "/user/logout")
+	})
+
+	// User API
+
+	http.HandleFunc("/patient/create", func(w http.ResponseWriter, r *http.Request) {
+		controllers.CreatePatient(w, r, db, "/patient/create")
+	})
+
+	http.HandleFunc("/patient/get", func(w http.ResponseWriter, r *http.Request) {
+		controllers.GetPatient(w, r, db, "/patient/get")
+	})
+
+	http.HandleFunc("/patient/delete", func(w http.ResponseWriter, r *http.Request) {
+		controllers.DeletePatient(w, r, db, "/patient/delete")
 	})
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))

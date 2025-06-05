@@ -26,11 +26,12 @@ func ResponseError(w http.ResponseWriter, m string, log string, c int, path stri
 	fmt.Println(Log(log, path))
 }
 
-func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte) {
-	w.WriteHeader(http.StatusOK)
+func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte, c int) {
+	w.WriteHeader(c)
 	w.Write(s)
 	fmt.Println(Log(m, path))
 }
+
 func GetRequestBodyUserAccount(w http.ResponseWriter, r *http.Request, path string) (models.UserAccount, error) {
 	// get client request body
 	body, err := io.ReadAll(r.Body)
@@ -46,4 +47,21 @@ func GetRequestBodyUserAccount(w http.ResponseWriter, r *http.Request, path stri
 	}
 
 	return account, nil
+}
+
+func GetRequestBodyPatientData(w http.ResponseWriter, r *http.Request, path string) (models.PatientData, error) {
+	// get client request body
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// encoding client request body
+	var patient models.PatientData
+	err = json.Unmarshal(body, &patient)
+	if err != nil {
+		return models.PatientData{}, err
+	}
+
+	return patient, nil
 }
