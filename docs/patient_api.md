@@ -110,6 +110,56 @@
 }
 ```
 
+## Update Patient /patient/update
+
+### Request Header
+```bash
+"Authorization: Bearer xxx"
+```
+
+### Request Body
+```bash
+{
+    "medical_record" : "000002",
+    "update": {
+        "medical_record": "000001",
+        "name": "Dummy",
+        "gender": "laki - laki",
+        "wedding": "Menikah",
+        "religion": "Islam",
+        "education": "SMA/Sederajat",
+        "birth_place": "Jakarta",
+        "birth_date": "1990-01-01",
+        "work": "Engineer",
+        "address": "Jl. Merdeka No. 1",
+        "village": 1,
+        "district": 1,
+        "regencie": 1,
+        "province": 1,
+        "nik": "1234567890123456",
+        "bpjs": "9876543210",
+        "phone_number": "081234567890",
+        "parent_name": "Jane Doe",
+        "parent_gender": "Perempuan"
+    }
+}
+```
+
+### Success : 200
+```bash
+{
+	"status":"success",
+	"response":"updated"
+}
+```
+
+### Error Method Not Allowed : 400
+```bash
+{
+    "status": "failed",
+    "errors": "method not allowed"
+}
+
 ## Delete Patient /patient/delete
 
 ### Request Header

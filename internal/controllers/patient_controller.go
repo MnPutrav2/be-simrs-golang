@@ -123,7 +123,7 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 	// Check Header
 	// --- ---
 
-	patient, err := helper.GetRequestBodyPatientData(w, r, path)
+	patient, err := helper.GetRequestBodyPatientDataUpdate(w, r, path)
 	if err != nil {
 		helper.ResponseError(w, "empty request body", "empty request body : 400", 400, path)
 		return

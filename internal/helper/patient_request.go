@@ -24,3 +24,20 @@ func GetRequestBodyPatientData(w http.ResponseWriter, r *http.Request, path stri
 
 	return patient, nil
 }
+
+func GetRequestBodyPatientDataUpdate(w http.ResponseWriter, r *http.Request, path string) (models.PatientDataUpdate, error) {
+	// get client request body
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// encoding client request body
+	var patient models.PatientDataUpdate
+	err = json.Unmarshal(body, &patient)
+	if err != nil {
+		return models.PatientDataUpdate{}, err
+	}
+
+	return patient, nil
+}

@@ -21,3 +21,8 @@ type PatientData struct {
 	ParentName    string `json:"parent_name"`
 	ParentGender  string `json:"parent_gender"`
 }
+
+type PatientDataUpdate struct {
+	MedicalRecordKey string      `json:"medical_record"`
+	Update           PatientData `json:"update"`
+}
