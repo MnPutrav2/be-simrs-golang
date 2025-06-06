@@ -70,6 +70,13 @@ func (q *patientRepository) GetPatientData(limit string, search string, token st
 
 }
 
+func (q *patientRepository) UpdatePatientData(patient models.PatientData) error {
+	mr := patient.MedicalRecord
+
+	_, err := q.sql.Exec("UPDATE patients SET medical_record = ?, name = ?, gender = ?, wedding = ?, religion = ?, education = ?, birth_place = ?, birth_date = ?, work = ?, address = ?, village = ?, district = ?, regencie = ?, province = ?, nik = ?, bpjs = ?, phone_number = ?, parent_name = ?, parent_gender = ? WHERE medical_record = ?", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.ParentGender, mr)
+	return err
+}
+
 func (q *patientRepository) DeletePatientData(mr string) error {
 	_, err := q.sql.Exec("DELETE FROM patients WHERE medical_record = ?", mr)
 	return err

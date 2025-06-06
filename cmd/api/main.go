@@ -24,6 +24,7 @@ func main() {
 	// Patient API
 	handler("POST", "/patient/create", controllers.CreatePatient, db)
 	handler("GET", "/patient/get", controllers.GetPatient, db)
+	handler("PUT", "/patient/update", controllers.UpdatePatientData, db)
 	handler("DELETE", "/patient/delete", controllers.DeletePatient, db)
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
