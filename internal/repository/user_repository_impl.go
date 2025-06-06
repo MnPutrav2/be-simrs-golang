@@ -59,7 +59,7 @@ func (q *userRepository) GetUserStatus(token string, path string) (models.Employ
 
 	var user models.EmployeeData
 
-	err = q.sql.QueryRow("SELECT employee.id, employee.name, employee.gender FROM employee INNER JOIN users ON employee.id = users.employee_id WHERE users.id = ?", id).Scan(&user.Employee_ID, &user.Name, &user.Gender)
+	err = q.sql.QueryRow("SELECT employee.id, employee.name, employee.gender, employee.birth_place, employee.birth_date, employee.address, employee.village, employee.district, employee.regencie, employee.province, employee.nik, employee.bpjs, employee.npwp, employee.phone_number, employee.email FROM employee INNER JOIN users ON employee.id = users.employee_id WHERE users.id = ?", id).Scan(&user.Employee_ID, &user.Name, &user.Gender, &user.BirthPlace, &user.BirthDate, &user.Address, &user.Village, &user.District, &user.Regencie, &user.Province, &user.NIK, &user.BPJS, &user.NPWP, &user.PhoneNumber, &user.Email)
 	if err != nil {
 		helper.ResponseError(q.w, "employee data not found", "employee data not found : 404", 404, path)
 		return models.EmployeeData{}, err

@@ -36,7 +36,10 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 	token := split[1]
 	userRepo := repository.NewUserRepository(w, r, sql)
-	status, _ := userRepo.GetUserStatus(token, path)
+	status, err := userRepo.GetUserStatus(token, path)
+	if err != nil {
+		return
+	}
 
 	s, err := json.Marshal(status)
 	if err != nil {
