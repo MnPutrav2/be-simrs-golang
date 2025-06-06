@@ -161,7 +161,7 @@
 }
 ```
 
-## Delete Patient /patient/delete
+## Delete Patient /patient/delete?mr=
 
 ### Request Header
 ```bash
