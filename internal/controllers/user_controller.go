@@ -12,9 +12,9 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/repository"
 )
 
-func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "GET") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 
@@ -46,9 +46,9 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	helper.ResponseSuccess(w, "get user status : 200", path, s, 200)
 }
 
-func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "DELETE") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 
@@ -71,8 +71,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	token := split[1]
 
 	userRepo := repository.NewUserRepository(w, r, sql)
-	err := userRepo.UserLogout(token)
-	if err != nil {
+	if err := userRepo.UserLogout(token); err != nil {
 		panic(err.Error())
 	}
 
@@ -84,9 +83,9 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	helper.ResponseSuccess(w, "client logout : 200", path, s, 200)
 }
 
-func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "GET") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 

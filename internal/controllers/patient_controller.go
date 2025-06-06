@@ -12,9 +12,9 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/repository"
 )
 
-func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "POST") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 
@@ -44,8 +44,7 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	token := split[1]
 
 	patientRepo := repository.NewPatientRepository(w, r, sql)
-	err = patientRepo.CreatePatientData(patient, token, path)
-	if err != nil {
+	if err := patientRepo.CreatePatientData(patient, token, path); err != nil {
 		return
 	}
 
@@ -58,9 +57,9 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	helper.ResponseSuccess(w, "create patient : 201", path, s, 201)
 }
 
-func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "GET") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 
@@ -102,9 +101,9 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	helper.ResponseSuccess(w, "get patient data : 200", path, s, 200)
 }
 
-func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
+func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
 	// ---- Needed for every request ---
-	if !pkg.CheckRequestHeader(w, r, sql, path, "DELETE") {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 
@@ -128,8 +127,7 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	param := r.URL.Query().Get("mr")
 
 	patientRepo := repository.NewPatientRepository(w, r, sql)
-	err := patientRepo.DeletePatientData(param)
-	if err != nil {
+	if err := patientRepo.DeletePatientData(param); err != nil {
 		panic(err.Error())
 	}
 

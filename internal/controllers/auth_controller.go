@@ -10,8 +10,8 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
-func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
-	if !pkg.CheckRequestHeader(w, r, sql, path, "POST") {
+func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
 		return
 	}
 

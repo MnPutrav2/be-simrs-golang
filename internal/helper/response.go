@@ -3,7 +3,6 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -30,38 +29,4 @@ func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte, c i
 	w.WriteHeader(c)
 	w.Write(s)
 	fmt.Println(Log(m, path))
-}
-
-func GetRequestBodyUserAccount(w http.ResponseWriter, r *http.Request, path string) (models.UserAccount, error) {
-	// get client request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// encoding client request body
-	var account models.UserAccount
-	err = json.Unmarshal(body, &account)
-	if err != nil {
-		return models.UserAccount{}, err
-	}
-
-	return account, nil
-}
-
-func GetRequestBodyPatientData(w http.ResponseWriter, r *http.Request, path string) (models.PatientData, error) {
-	// get client request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// encoding client request body
-	var patient models.PatientData
-	err = json.Unmarshal(body, &patient)
-	if err != nil {
-		return models.PatientData{}, err
-	}
-
-	return patient, nil
 }
