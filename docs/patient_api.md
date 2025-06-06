@@ -159,6 +159,7 @@
     "status": "failed",
     "errors": "method not allowed"
 }
+```
 
 ## Delete Patient /patient/delete
 
