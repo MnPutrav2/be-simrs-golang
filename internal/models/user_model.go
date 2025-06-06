@@ -20,3 +20,8 @@ type UserTokenData struct {
 	CreateAt string
 	Expired  string
 }
+
+type UserPages struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+}

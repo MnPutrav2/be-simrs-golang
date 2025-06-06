@@ -9,6 +9,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
+	"github.com/MnPutrav2/be-simrs-golang/internal/repository"
 )
 
 func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
@@ -40,26 +41,11 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		return
 	}
 
-	var checkExists bool
-	err = sql.QueryRow("SELECT EXISTS(SELECT 1 FROM patients WHERE medical_record = ?)", patient.MedicalRecord).Scan(&checkExists)
-	if err != nil {
-		panic(err.Error())
-	}
+	token := split[1]
 
-	if checkExists {
-		helper.ResponseError(w, "duplicate entry", "duplicate entry : 400", 400, path)
-		return
-	}
-
-	insert, err := sql.Exec("INSERT INTO patients(patients.medical_record, patients.name, patients.gender, patients.wedding, patients.religion, patients.education, patients.birth_place, patients.birth_date, patients.work, patients.address, patients.village, patients.district, patients.regencie, patients.province, patients.nik, patients.bpjs, patients.phone_number, patients.parent_name, patients.parent_gender) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.ParentGender)
+	patientRepo := repository.NewPatientRepository(w, r, sql)
+	err = patientRepo.CreatePatientData(patient, token, path)
 	if err != nil {
-		helper.ResponseError(w, "error server", err.Error()+" : 500", 500, path)
-		return
-	}
-
-	_, err = insert.RowsAffected()
-	if err != nil {
-		helper.ResponseError(w, "failed insert data", "failed insert data : 400", 400, path)
 		return
 	}
 
@@ -100,23 +86,12 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	limit := param.Get("limit")
 	search := "%" + param.Get("search") + "%"
 
-	datas, err := sql.Query("SELECT * FROM patients WHERE medical_record LIKE ? OR name LIKE ? LIMIT ?", search, search, limit)
+	token := split[1]
+
+	patientRepo := repository.NewPatientRepository(w, r, sql)
+	patients, err := patientRepo.GetPatientData(limit, search, token, path)
 	if err != nil {
-		panic(err.Error())
-	}
-
-	var patients []models.PatientData
-
-	for datas.Next() {
-		var patient models.PatientData
-
-		err := datas.Scan(&patient.MedicalRecord, &patient.Name, &patient.Gender, &patient.Wedding, &patient.Religion, &patient.Education, &patient.BirthPlace, &patient.BirthDate, &patient.Work, &patient.Address, &patient.Village, &patient.District, &patient.Regencie, &patient.Province, &patient.NIK, &patient.BPJS, &patient.PhoneNumber, &patient.ParentName, &patient.ParentGender)
-		if err != nil {
-			helper.ResponseError(w, "error server", err.Error()+" : 500", 500, path)
-			return
-		}
-
-		patients = append(patients, patient)
+		return
 	}
 
 	s, err := json.Marshal(patients)
@@ -152,7 +127,8 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// get client request body
 	param := r.URL.Query().Get("mr")
 
-	_, err := sql.Exec("DELETE FROM patients WHERE medical_record = ?", param)
+	patientRepo := repository.NewPatientRepository(w, r, sql)
+	err := patientRepo.DeletePatientData(param)
 	if err != nil {
 		panic(err.Error())
 	}

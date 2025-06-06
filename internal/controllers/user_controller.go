@@ -9,6 +9,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
+	"github.com/MnPutrav2/be-simrs-golang/internal/repository"
 )
 
 func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
@@ -33,23 +34,11 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	// --- ---
 
-	var id int
+	token := split[1]
+	userRepo := repository.NewUserRepository(w, r, sql)
+	status, _ := userRepo.GetUserStatus(token, path)
 
-	err := sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = ?", split[1]).Scan(&id)
-	if err != nil {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
-		return
-	}
-
-	var user models.EmployeeData
-
-	err = sql.QueryRow("SELECT employee.id, employee.name, employee.gender FROM employee INNER JOIN users ON employee.id = users.employee_id WHERE users.id = ?", id).Scan(&user.Employee_ID, &user.Name, &user.Gender)
-	if err != nil {
-		helper.ResponseError(w, "employee data not found", "employee data not found : 404", 404, path)
-		return
-	}
-
-	s, err := json.Marshal(models.EmployeeData{Employee_ID: user.Employee_ID, Name: user.Name, Gender: user.Gender})
+	s, err := json.Marshal(status)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -79,7 +68,10 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	// Check Header
 	// --- ---
 
-	_, err := sql.Exec("DELETE FROM session_token WHERE session_token.token = ?", split[1])
+	token := split[1]
+
+	userRepo := repository.NewUserRepository(w, r, sql)
+	err := userRepo.UserLogout(token)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -90,11 +82,6 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	}
 
 	helper.ResponseSuccess(w, "client logout : 200", path, s, 200)
-}
-
-type Pages struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
 }
 
 func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string) {
@@ -119,31 +106,10 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	// Check Header
 	// --- ---
 
-	var id int
+	userRepo := repository.NewUserRepository(w, r, sql)
 
-	err := sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = ?", split[1]).Scan(&id)
-	if err != nil {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
-		return
-	}
-
-	result, err := sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.users_id = ?", id)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var pageList []Pages
-
-	for result.Next() {
-		var p Pages
-
-		err := result.Scan(&p.Name, &p.Path)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		pageList = append(pageList, p)
-	}
+	token := split[1]
+	pageList, _ := userRepo.GetUserPagesData(token, path)
 
 	s, err := json.Marshal(pageList)
 	if err != nil {
