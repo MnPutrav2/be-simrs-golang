@@ -7,4 +7,5 @@ type PatientRepository interface {
 	GetPatientData(limit string, search string, token string, path string) ([]models.PatientData, error)
 	DeletePatientData(mr string) error
 	UpdatePatientData(patient models.PatientDataUpdate) error
+	GetCurrentMedicalRecord() string
 }

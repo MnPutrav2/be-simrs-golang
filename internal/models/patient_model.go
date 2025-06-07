@@ -19,6 +19,7 @@ type PatientData struct {
 	BPJS          string `json:"bpjs"`
 	PhoneNumber   string `json:"phone_number"`
 	ParentName    string `json:"parent_name"`
+	Relationship  string `json:"relationship"`
 	ParentGender  string `json:"parent_gender"`
 }
 

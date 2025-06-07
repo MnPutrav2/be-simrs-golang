@@ -181,3 +181,36 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 	helper.ResponseSuccess(w, "delete patient data : 200", path, s, 200)
 }
+
+func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	patientRepo := repository.NewPatientRepository(w, r, sql)
+	mr := patientRepo.GetCurrentMedicalRecord()
+
+	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: mr})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	helper.ResponseSuccess(w, "get current MR : 200", path, s, 200)
+}

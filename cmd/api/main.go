@@ -26,6 +26,7 @@ func main() {
 	handler("GET", "/patient/get", controllers.GetPatient, db)
 	handler("PUT", "/patient/update", controllers.UpdatePatientData, db)
 	handler("DELETE", "/patient/delete", controllers.DeletePatient, db)
+	handler("GET", "/patient/getCurrentMedicalRecord", controllers.GetCurrentMR, db)
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)
