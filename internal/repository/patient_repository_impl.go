@@ -47,7 +47,7 @@ func (q *patientRepository) CreatePatientData(patient models.PatientData, token 
 }
 
 func (q *patientRepository) GetPatientData(limit string, search string, token string, path string) ([]models.PatientData, error) {
-	datas, err := q.sql.Query("SELECT * FROM patients WHERE medical_record LIKE ? OR name LIKE ? LIMIT ?", search, search, limit)
+	datas, err := q.sql.Query("SELECT * FROM patients WHERE medical_record LIKE ? OR name LIKE ? LIMIT ? ORDER BY medical_record DESC", search, search, limit)
 	if err != nil {
 		panic(err.Error())
 	}
