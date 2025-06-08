@@ -28,6 +28,11 @@ func main() {
 	handler("DELETE", "/patient/delete", controllers.DeletePatient, db)
 	handler("GET", "/patient/getCurrentMedicalRecord", controllers.GetCurrentMR, db)
 
+	// Register API
+	handler("POST", "/register/create", controllers.CreateRegistrationPatient, db)
+	handler("DELETE", "/register/delete", controllers.DeleteRegistrationPatient, db)
+	handler("GET", "/register/get", controllers.GetRegistrationPatient, db)
+
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)
 }
