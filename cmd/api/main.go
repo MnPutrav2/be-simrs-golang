@@ -36,6 +36,7 @@ func main() {
 	// Ambulatory Care API
 	handler("POST", "/ambulatory-care/create", controllers.CreateAmbulatoryCarePatient, db)
 	handler("DELETE", "/ambulatory-care/delete", controllers.DeleteAmbulatoryCarePatient, db)
+	handler("GET", "/ambulatory-care/get", controllers.GetAmbulatoryCarePatient, db)
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)

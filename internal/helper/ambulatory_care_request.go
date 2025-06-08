@@ -8,7 +8,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 )
 
-func GetAmbulatoryRequest(w http.ResponseWriter, r *http.Request, path string) (models.AmbulatoryCare, error) {
+func GetAmbulatoryRequest(w http.ResponseWriter, r *http.Request, path string) (models.RequestAmbulatoryCare, error) {
 	// get client request body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -16,10 +16,10 @@ func GetAmbulatoryRequest(w http.ResponseWriter, r *http.Request, path string) (
 	}
 
 	// encoding client request body
-	var care models.AmbulatoryCare
+	var care models.RequestAmbulatoryCare
 	err = json.Unmarshal(body, &care)
 	if err != nil {
-		return models.AmbulatoryCare{}, err
+		return models.RequestAmbulatoryCare{}, err
 	}
 
 	return care, nil

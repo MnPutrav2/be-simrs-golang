@@ -87,3 +87,41 @@ func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "deleted"})
 	helper.ResponseSuccess(w, "delete ambulatory care : 200", path, s, 200)
 }
+
+func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	query := r.URL.Query()
+	careNum := query.Get("care-number")
+	date1 := query.Get("date1")
+	date2 := query.Get("date2")
+
+	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
+	res, err := ambulatoryRepo.GetAmbulatoryCareData(careNum, date1, date2)
+	if err != nil {
+		helper.ResponseError(w, "failed get data", err.Error()+": 400", 400, path)
+		return
+	}
+
+	s, _ := json.Marshal(res)
+	helper.ResponseSuccess(w, "get ambulatory care : 200", path, s, 200)
+}
