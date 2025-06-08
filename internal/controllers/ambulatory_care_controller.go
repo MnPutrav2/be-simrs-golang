@@ -1,0 +1,89 @@
+package controllers
+
+import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+	"strings"
+
+	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
+	"github.com/MnPutrav2/be-simrs-golang/internal/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
+	"github.com/MnPutrav2/be-simrs-golang/internal/repository"
+)
+
+func CreateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	care, err := helper.GetAmbulatoryRequest(w, r, path)
+	if err != nil {
+		helper.ResponseError(w, "error json format", "error json format : 400", 400, path)
+		return
+	}
+
+	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
+	err = ambulatoryRepo.CreateAmbulatoryCareData(care)
+	if err != nil {
+		helper.ResponseError(w, "failed create data", err.Error()+": 400", 400, path)
+		return
+	}
+
+	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
+	helper.ResponseSuccess(w, "create ambulatory care : 201", path, s, 201)
+}
+
+func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	query := r.URL.Query()
+	careNum := query.Get("care-number")
+	date := query.Get("date")
+
+	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
+	err := ambulatoryRepo.DeleteAmbulatoryCareData(careNum, date)
+	if err != nil {
+		helper.ResponseError(w, "failed delete data", err.Error()+": 400", 400, path)
+		return
+	}
+
+	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "deleted"})
+	helper.ResponseSuccess(w, "delete ambulatory care : 200", path, s, 200)
+}

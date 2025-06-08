@@ -1,7 +1,7 @@
 package models
 
 type ResponseRegisterPatient struct {
-	TreatmentNumber string `json:"treatment_number"`
+	CareNumber      string `json:"care_number"`
 	RegisterNumber  string `json:"register_number"`
 	RegisterDate    string `json:"register_date"`
 	MedicalRecord   string `json:"medical_record"`
@@ -15,11 +15,11 @@ type ResponseRegisterPatient struct {
 }
 
 type RequestRegisterPatient struct {
-	TreatmentNumber string `json:"treatment_number"`
-	RegisterNumber  string `json:"register_number"`
-	RegisterDate    string `json:"register_date"`
-	MedicalRecord   string `json:"medical_record"`
-	PaymentMethod   string `json:"payment_method"`
-	Policlinic      string `json:"policlinic"`
-	Doctor          string `json:"doctor"`
+	CareNumber     string `json:"care_number"`
+	RegisterNumber string `json:"register_number"`
+	RegisterDate   string `json:"register_date"`
+	MedicalRecord  string `json:"medical_record"`
+	PaymentMethod  string `json:"payment_method"`
+	Policlinic     string `json:"policlinic"`
+	Doctor         string `json:"doctor"`
 }

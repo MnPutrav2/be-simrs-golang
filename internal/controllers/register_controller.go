@@ -73,7 +73,7 @@ func DeleteRegistrationPatient(w http.ResponseWriter, r *http.Request, sql *sql.
 	// Check Header
 	// --- ---
 
-	query := r.URL.Query().Get("treatment-number")
+	query := r.URL.Query().Get("care-number")
 
 	registerRepo := repository.NewRegisterRepository(sql, w, r)
 	err := registerRepo.DeleteRegistrationData(query)
