@@ -13,6 +13,8 @@ func Cors(w http.ResponseWriter, r *http.Request) bool {
 		panic(err.Error())
 	}
 
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("ALLOW_ORIGIN"))
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE, PUT")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
