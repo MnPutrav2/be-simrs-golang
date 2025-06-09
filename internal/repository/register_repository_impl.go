@@ -66,3 +66,25 @@ func (q *registerRepository) DeleteRegistrationData(tn string) error {
 	_, err := q.sql.Exec("DELETE FROM registration WHERE care_number = ?", tn)
 	return err
 }
+
+func (q *registerRepository) GetCurrentRegisterNumber(date string, policlinic string) (int, error) {
+	var data int
+
+	err := q.sql.QueryRow("SELECT COUNT(*) FROM registration WHERE registration.register_date = ? AND registration.policlinic = ?", date, policlinic).Scan(&data)
+	if err != nil {
+		panic(err.Error)
+	}
+
+	return data, nil
+}
+
+func (q *registerRepository) GetCurrentCareNumber(date string) (int, error) {
+	var data int
+
+	err := q.sql.QueryRow("SELECT COUNT(*) FROM registration WHERE registration.register_date = ?", date).Scan(&data)
+	if err != nil {
+		panic(err.Error)
+	}
+
+	return data, nil
+}

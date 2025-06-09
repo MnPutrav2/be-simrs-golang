@@ -26,12 +26,14 @@ func main() {
 	handler("GET", "/patient/get", controllers.GetPatient, db)
 	handler("PUT", "/patient/update", controllers.UpdatePatientData, db)
 	handler("DELETE", "/patient/delete", controllers.DeletePatient, db)
-	handler("GET", "/patient/getCurrentMedicalRecord", controllers.GetCurrentMR, db)
+	handler("GET", "/patient/get-current-medical-record", controllers.GetCurrentMR, db)
 
 	// Register API
 	handler("POST", "/register/create", controllers.CreateRegistrationPatient, db)
 	handler("DELETE", "/register/delete", controllers.DeleteRegistrationPatient, db)
 	handler("GET", "/register/get", controllers.GetRegistrationPatient, db)
+	handler("GET", "/register/get-current-register", controllers.GetCurrentRegisterNum, db)
+	handler("GET", "/register/get-current-care-number", controllers.GetCurrentCareNum, db)
 
 	// Ambulatory Care API
 	handler("POST", "/ambulatory-care/create", controllers.CreateAmbulatoryCarePatient, db)

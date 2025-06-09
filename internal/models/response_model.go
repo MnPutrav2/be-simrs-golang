@@ -7,6 +7,11 @@ type ResponseDataSuccess struct {
 	Response string `json:"response"`
 }
 
+type ResponseDataSuccessInt struct {
+	Status   string `json:"status"`
+	Response int    `json:"response"`
+}
+
 type ResponseDataError struct {
 	Status string `json:"status"`
 	Errors string `json:"errors"`
