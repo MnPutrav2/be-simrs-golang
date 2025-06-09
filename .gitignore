@@ -1,12 +1,5 @@
 # Configuration
 .env
 
-# Models
-internal/models/satu_sehat_token_model.go
-internal/models/satu_sehat_encounter_model.go
-
-# Package
-internal/pkg/satu_sehat_token.go
-
 cmd/test.go
 api_test

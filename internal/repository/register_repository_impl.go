@@ -43,7 +43,7 @@ func (q *registerRepository) CreateRegistrationData(reg models.RequestRegisterPa
 func (q *registerRepository) GetRegistrationData(date1 string, date2 string, limit string, search string) ([]models.ResponseRegisterPatient, error) {
 	result, err := q.sql.Query("SELECT registration.care_number, registration.register_number, registration.register_date, registration.medical_record, patients.name, patients.gender, registration.payment_method, registration.policlinic, policlinics.name, registration.doctor, doctors.name FROM registration INNER JOIN patients ON registration.medical_record = patients.medical_record INNER JOIN policlinics ON registration.policlinic = policlinics.id INNER JOIN doctors ON registration.doctor = doctors.id WHERE registration.register_date BETWEEN ? AND ? AND (registration.care_number LIKE ? OR patients.name LIKE ?) ORDER BY registration.care_number DESC LIMIT ?", date1, date2, search, search, limit)
 	if err != nil {
-		return []models.ResponseRegisterPatient{}, nil
+		return []models.ResponseRegisterPatient{}, err
 	}
 
 	var datas []models.ResponseRegisterPatient

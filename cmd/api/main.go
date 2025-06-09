@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/handlers"
 	"github.com/MnPutrav2/be-simrs-golang/internal/config"
 	"github.com/MnPutrav2/be-simrs-golang/internal/controllers"
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
@@ -39,6 +40,11 @@ func main() {
 	handler("POST", "/ambulatory-care/create", controllers.CreateAmbulatoryCarePatient, db)
 	handler("DELETE", "/ambulatory-care/delete", controllers.DeleteAmbulatoryCarePatient, db)
 	handler("GET", "/ambulatory-care/get", controllers.GetAmbulatoryCarePatient, db)
+
+	// Satu Sehat
+	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)
+	handler("POST", "/satu-sehat/create-encounter", handlers.CreateSatuSehatEncounter, db)
+	handler("POST", "/satu-sehat/create-condition", handlers.CreateSatuSehatCondition, db)
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)
