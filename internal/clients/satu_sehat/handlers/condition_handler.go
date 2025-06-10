@@ -18,7 +18,7 @@ func CreateSatuSehatCondition(w http.ResponseWriter, r *http.Request, db *sql.DB
 		return
 	}
 
-	token, err := pkg.CreateToken(db)
+	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
 		helper.ResponseError(w, "error create token satu sehat", err.Error()+" : 400", 400, path)
 		return
@@ -26,7 +26,8 @@ func CreateSatuSehatCondition(w http.ResponseWriter, r *http.Request, db *sql.DB
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		panic(err.Error())
+		helper.ResponseError(w, "empty request body", err.Error()+" : 400", 400, path)
+		return
 	}
 
 	var patient models.ConditionClientRequest

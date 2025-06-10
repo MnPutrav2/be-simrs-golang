@@ -1,5 +1,2 @@
 # Configuration
 .env
-
-cmd/test.go
-api_test

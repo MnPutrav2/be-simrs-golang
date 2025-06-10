@@ -159,5 +159,12 @@ func (q *satuSehatEncounter) CreateEncounterData(patient models.EncounterRespons
 		return nil, err
 	}
 
+	if resp.StatusCode == 201 {
+		var data models.EncounterBodyResponse
+		_ = json.Unmarshal(body, &data)
+
+		return []byte(data.ID), nil
+	}
+
 	return body, nil
 }

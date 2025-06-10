@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/services"
@@ -11,7 +12,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
-func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, path string, m string) {
+func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.DB, path string, m string) {
 	if r.Method != m {
 		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
 		return
@@ -23,15 +24,21 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 		return
 	}
 
-	param := r.URL.Query()
-
-	patientService := services.NewSatuSehatPatient(db, r)
-	data, err := patientService.GetDataPatientByNIK(param.Get("nik"), token)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseError(w, "failed fetch data", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, "empty request body", err.Error()+" : 400", 400, path)
 		return
 	}
 
-	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: data})
-	helper.ResponseSuccess(w, "success get patient id (satu-sehat)", "success get patient id (satu-sehat) : 200", s, 200)
+	var patient models.ObservatioClientRequest
+	_ = json.Unmarshal(body, &patient)
+
+	observationService := services.NewSatuSehatObservation(db)
+	res, err := observationService.CreateObservationHeartRate(patient, token)
+	if err != nil {
+		helper.ResponseError(w, "error fetch data", err.Error()+" : 400", 400, path)
+		return
+	}
+
+	helper.ResponseSuccess(w, "success fetch data", path, res, 200)
 }

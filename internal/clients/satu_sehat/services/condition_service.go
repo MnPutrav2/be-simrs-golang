@@ -61,8 +61,8 @@ func (q *satuSehatConditionService) CreateSatuSehatCondition(patient models.Cond
 		Encounter: models.Encounter{
 			Reference: "Encounter/" + patient.Encounter,
 		},
-		OnSetDateTime: patient.SetDate,
-		RecordedDate:  patient.RecorderDate,
+		OnSetDateTime: patient.Date,
+		RecordedDate:  patient.Date,
 	})
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(c))
@@ -85,6 +85,13 @@ func (q *satuSehatConditionService) CreateSatuSehatCondition(patient models.Cond
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode == 201 {
+		var data models.ConditionBodyResponse
+		_ = json.Unmarshal(body, &data)
+
+		return []byte(data.ID), nil
 	}
 
 	return body, nil

@@ -45,6 +45,8 @@ func main() {
 	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)
 	handler("POST", "/satu-sehat/create-encounter", handlers.CreateSatuSehatEncounter, db)
 	handler("POST", "/satu-sehat/create-condition", handlers.CreateSatuSehatCondition, db)
+	handler("POST", "/satu-sehat/create-observation", handlers.CreateSatuSehatObservation, db)
+	handler("POST", "/satu-sehat/create-clinical-impression", handlers.CreateSatuSehatClinicalImpression, db)
 
 	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
 	http.ListenAndServe(":8080", nil)

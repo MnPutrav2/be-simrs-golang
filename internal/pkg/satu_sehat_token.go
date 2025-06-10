@@ -17,28 +17,21 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func CreateToken(db *sql.DB) (string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err.Error())
-	}
-
+func CreateSatuSehatToken(db *sql.DB) (string, error) {
+	_ = godotenv.Load()
 	tm := time.Now()
 
 	var count int
-	err = db.QueryRow("SELECT COUNT(satu_sehat_token.id) FROM satu_sehat_token").Scan(&count)
-	if err != nil {
-		panic(err.Error())
-	}
+	_ = db.QueryRow("SELECT COUNT(*) FROM satu_sehat_token").Scan(&count)
 
-	endpoint := os.Getenv("SATU_SEHAT_END_POINT_OAUTH")
+	endpoint := os.Getenv("SATU_SEHAT_END_POINT_OAUTH") + "/accesstoken?grant_type=client_credentials"
 
 	data := url.Values{}
 	data.Set("client_id", os.Getenv("SATU_SEHAT_CLIENT_ID"))
 	data.Set("client_secret", os.Getenv("SATU_SEHAT_CLIENT_SECRET"))
 
 	if count == 0 {
-		resp, err := http.Post(endpoint+"/accesstoken?grant_type=client_credentials", "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
+		resp, err := http.Post(endpoint, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 		if err != nil {
 			panic(err.Error())
 		}
@@ -69,13 +62,15 @@ func CreateToken(db *sql.DB) (string, error) {
 
 		defer insert.Close()
 
+		fmt.Println(result)
+
 		fmt.Println(helper.Log("satu sehat token created : 201", "/access_token"))
 
 		return result.AccessToken, nil
 	}
 
 	var token string
-	err = db.QueryRow("SELECT satu_sehat_token.token FROM satu_sehat_token").Scan(&token)
+	err := db.QueryRow("SELECT satu_sehat_token.token FROM satu_sehat_token").Scan(&token)
 	if err != nil {
 		panic(err.Error())
 	}

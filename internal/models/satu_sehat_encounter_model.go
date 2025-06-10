@@ -90,3 +90,38 @@ type EncounterResponse struct {
 	LocationID       string `json:"location_id"`
 	Start            string `json:"start"`
 }
+
+type EncounterBodyResponse struct {
+	Class           Class           `json:"class"`
+	ID              string          `json:"id"`
+	Identifier      []Identifier    `json:"identifier"`
+	Location        []Location      `json:"location"`
+	Meta            Meta            `json:"meta"`
+	Participant     []Participant   `json:"participant"`
+	Period          Period          `json:"period"`
+	ResourceType    string          `json:"resourceType"`
+	ServiceProvider ServiceProvider `json:"serviceProvider"`
+	Status          string          `json:"status"`
+	StatusHistory   []StatusHistory `json:"statusHistory"`
+	Subject         Subject         `json:"subject"`
+}
+
+type LocationExtension struct {
+	Extension []ExtensionExtension `json:"extension"`
+	URL       string               `json:"url"`
+}
+
+type ExtensionExtension struct {
+	URL                  string `json:"url"`
+	ValueCodeableConcept Type   `json:"valueCodeableConcept"`
+}
+
+type Meta struct {
+	LastUpdated string `json:"lastUpdated"`
+	VersionID   string `json:"versionId"`
+}
+
+type Participant struct {
+	Individual Subject `json:"individual"`
+	Type       []Type  `json:"type"`
+}

@@ -12,7 +12,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
-func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB, path string, m string) {
+func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, db *sql.DB, path string, m string) {
 	if r.Method != m {
 		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
 		return
@@ -24,19 +24,19 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 		return
 	}
 
-	data, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		helper.ResponseError(w, "empty request body", err.Error()+" : 400", 400, path)
 		return
 	}
 
-	var patient models.EncounterResponse
-	_ = json.Unmarshal(data, &patient)
+	var patient models.ClinicalImpressionClientRequest
+	_ = json.Unmarshal(body, &patient)
 
-	encounterService := services.NewSatuSehatEncounter(db)
-	res, err := encounterService.CreateEncounterData(patient, token)
+	clinicalImpressionService := services.NewSatuSehatClinicalImpression(db)
+	res, err := clinicalImpressionService.CreateClinicalImpression(patient, token)
 	if err != nil {
-		helper.ResponseError(w, "error fetch data", " : 400", 400, path)
+		helper.ResponseError(w, "error fetch data", err.Error()+" : 400", 400, path)
 		return
 	}
 
