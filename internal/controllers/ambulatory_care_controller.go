@@ -35,7 +35,7 @@ func CreateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	// --- ---
 
 	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[0]).Scan(&id); err != nil {
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
 		panic(err.Error)
 	}
 
@@ -79,7 +79,7 @@ func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	// --- ---
 
 	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[0]).Scan(&id); err != nil {
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
 		panic(err.Error)
 	}
 
@@ -121,7 +121,7 @@ func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.D
 	// --- ---
 
 	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[0]).Scan(&id); err != nil {
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
 		panic(err.Error)
 	}
 
