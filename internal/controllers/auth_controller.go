@@ -18,7 +18,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 	// get client request body
 	account, err := helper.GetRequestBodyUserAccount(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, 0, "empty request body", "empty request body : 400", 400, path)
+		helper.ResponseWarn(w, 0, "empty request body", "empty request body", 400, path)
 		return
 	}
 
@@ -32,7 +32,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 
 	// if account not available
 	if id != 1 {
-		helper.ResponseError(w, 0, "Login failed : Check your username or password", "failed login : 400", 400, path)
+		helper.ResponseWarn(w, 0, "Login failed : Check your username or password", "username or password error", 400, path)
 		return
 	}
 
@@ -42,5 +42,5 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "client login : 200 ", path, s, 201)
+	helper.ResponseSuccess(w, id, "client login", path, s, 201)
 }

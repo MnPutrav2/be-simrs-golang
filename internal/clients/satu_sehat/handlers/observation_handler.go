@@ -22,14 +22,14 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -37,13 +37,13 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, 0, "error create token satu sehat", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error create token satu sehat", err.Error(), 400, path)
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseError(w, 0, "empty request body", err.Error()+" : 400", 400, path)
+		helper.ResponseWarn(w, 0, "empty request body", err.Error(), 400, path)
 		return
 	}
 
@@ -53,7 +53,7 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 	observationService := services.NewSatuSehatObservation(db)
 	res, err := observationService.CreateObservationHeartRate(patient, token)
 	if err != nil {
-		helper.ResponseError(w, 0, "error fetch data", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error fetch data", err.Error(), 400, path)
 		return
 	}
 

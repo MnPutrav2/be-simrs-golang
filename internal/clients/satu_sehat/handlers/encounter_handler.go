@@ -22,14 +22,14 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -41,13 +41,13 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, id, "error create token satu sehat", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, id, "error create token satu sehat", err.Error(), 400, path)
 		return
 	}
 
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseError(w, id, "empty request body", err.Error()+" : 400", 400, path)
+		helper.ResponseWarn(w, id, "empty request body", err.Error(), 400, path)
 		return
 	}
 
@@ -57,7 +57,7 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 	encounterService := services.NewSatuSehatEncounter(db)
 	res, err := encounterService.CreateEncounterData(patient, token)
 	if err != nil {
-		helper.ResponseError(w, id, "error fetch data", " : 400", 400, path)
+		helper.ResponseError(w, id, "error fetch data", err.Error(), 400, path)
 		return
 	}
 
@@ -68,6 +68,6 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 	} else {
 		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "failed", Response: res.Data})
 
-		helper.ResponseSuccess(w, id, "failed fetch data : 400", path, dt, 400)
+		helper.ResponseSuccess(w, id, "failed fetch data", path, dt, 400)
 	}
 }

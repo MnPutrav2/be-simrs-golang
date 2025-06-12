@@ -22,14 +22,14 @@ func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, d
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -37,13 +37,13 @@ func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, d
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, 0, "error create token satu sehat", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error create token satu sehat", err.Error(), 400, path)
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseError(w, 0, "empty request body", err.Error()+" : 400", 400, path)
+		helper.ResponseWarn(w, 0, "empty request body", err.Error(), 400, path)
 		return
 	}
 
@@ -53,7 +53,7 @@ func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, d
 	clinicalImpressionService := services.NewSatuSehatClinicalImpression(db)
 	res, err := clinicalImpressionService.CreateClinicalImpression(patient, token)
 	if err != nil {
-		helper.ResponseError(w, 0, "error fetch data", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error fetch data", err.Error(), 400, path)
 		return
 	}
 
@@ -64,6 +64,6 @@ func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, d
 	} else {
 		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "failed", Response: res.Data})
 
-		helper.ResponseSuccess(w, 0, "failed fetch data : 400", path, dt, 400)
+		helper.ResponseSuccess(w, 0, "failed fetch data", path, dt, 400)
 	}
 }

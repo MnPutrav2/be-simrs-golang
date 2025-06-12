@@ -21,14 +21,14 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
@@ -37,7 +37,7 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// get client request body
 	patient, err := helper.GetRequestBodyPatientData(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, 0, "empty request body", "empty request body : 400", 400, path)
+		helper.ResponseWarn(w, 0, "empty request body", "empty request body : 400", 400, path)
 		return
 	}
 
@@ -66,14 +66,14 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -102,7 +102,7 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get patient data : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get patient data ", path, s, 200)
 }
 
 func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -114,14 +114,14 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -133,23 +133,23 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 
 	patient, err := helper.GetRequestBodyPatientDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, id, "empty request body", "empty request body : 400", 400, path)
+		helper.ResponseWarn(w, id, "empty request body", "empty request body", 400, path)
 		return
 	}
 
 	patientRepo := repository.NewPatientRepository(w, r, sql)
 	if err := patientRepo.UpdatePatientData(patient); err != nil {
-		helper.ResponseError(w, id, "patient data not found", err.Error()+" : 404", 404, path)
+		helper.ResponseWarn(w, id, "patient data not found", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "updated"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error()+" : 500", 500, path)
+		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "update patient data : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "update patient data", path, s, 200)
 }
 
 func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -161,14 +161,14 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -191,7 +191,7 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "delete patient data : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "delete patient data", path, s, 200)
 }
 
 func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -203,14 +203,14 @@ func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -228,5 +228,5 @@ func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get current MR : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get current MR", path, s, 200)
 }

@@ -21,11 +21,28 @@ func ResponseError(w http.ResponseWriter, id int, m string, log string, c int, p
 
 	w.WriteHeader(c)
 	w.Write(data)
-	Log(log, id, path)
+	Log(log, "ERROR", id, path)
+}
+
+func ResponseWarn(w http.ResponseWriter, id int, m string, log string, c int, path string) {
+
+	res := models.ResponseDataError{
+		Status: "failed",
+		Errors: m,
+	}
+
+	data, err := json.Marshal(res)
+	if err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(c)
+	w.Write(data)
+	Log(log, "WARN", id, path)
 }
 
 func ResponseSuccess(w http.ResponseWriter, id int, m string, path string, s []byte, c int) {
 	w.WriteHeader(c)
 	w.Write(s)
-	Log(m, id, path)
+	Log(m, "INFO", id, path)
 }

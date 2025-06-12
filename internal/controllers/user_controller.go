@@ -21,14 +21,14 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
@@ -50,7 +50,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get user status : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get user status", path, s, 200)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -62,14 +62,14 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -92,7 +92,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "client logout : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "client logout", path, s, 200)
 }
 
 func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -104,14 +104,14 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -132,6 +132,6 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get pages : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get pages", path, s, 200)
 
 }

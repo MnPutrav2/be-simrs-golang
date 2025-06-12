@@ -4,9 +4,15 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/MnPutrav2/be-simrs-golang/internal/config"
 )
 
-func Log(m string, id int, path string) {
+func Log(m string, lev string, id int, path string) {
+
+	db := config.SqlDb()
+	defer db.Close()
+
 	t := time.Now()
 	var ty string
 
@@ -14,6 +20,10 @@ func Log(m string, id int, path string) {
 		ty = "[System]"
 	} else {
 		ty = "[User : " + strconv.Itoa(id) + "]"
+	}
+
+	if _, err := db.Exec("INSERT INTO logs(users_id, level, message, path) VALUES(?, ?, ?, ?)", id, lev, m, path); err != nil {
+		panic(err.Error())
 	}
 
 	log := fmt.Sprintf("[%s] %s %s %s", t.Format("02 January 2006, 15:04:05"), ty, m, path)

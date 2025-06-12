@@ -21,14 +21,14 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
@@ -36,7 +36,7 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, 0, "error create token satu sehat", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error create token satu sehat", err.Error(), 400, path)
 		return
 	}
 
@@ -45,10 +45,10 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 	patientService := services.NewSatuSehatPatient(db, r)
 	data, err := patientService.GetDataPatientByNIK(param.Get("nik"), token)
 	if err != nil {
-		helper.ResponseError(w, 0, "failed fetch data", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "failed fetch data", err.Error(), 400, path)
 		return
 	}
 
 	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: data})
-	helper.ResponseSuccess(w, 0, "success get patient id (satu-sehat)", "success get patient id (satu-sehat) : 200", s, 200)
+	helper.ResponseSuccess(w, 0, "success get patient id (satu-sehat)", "success get patient id (satu-sehat)", s, 200)
 }
