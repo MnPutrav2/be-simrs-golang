@@ -7,7 +7,7 @@ import (
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 )
 
-func ResponseError(w http.ResponseWriter, m string, log string, c int, path string) {
+func ResponseError(w http.ResponseWriter, id int, m string, log string, c int, path string) {
 
 	res := models.ResponseDataError{
 		Status: "failed",
@@ -21,11 +21,11 @@ func ResponseError(w http.ResponseWriter, m string, log string, c int, path stri
 
 	w.WriteHeader(c)
 	w.Write(data)
-	Log(log, path)
+	Log(log, id, path)
 }
 
-func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte, c int) {
+func ResponseSuccess(w http.ResponseWriter, id int, m string, path string, s []byte, c int) {
 	w.WriteHeader(c)
 	w.Write(s)
-	Log(m, path)
+	Log(m, id, path)
 }

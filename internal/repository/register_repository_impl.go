@@ -27,13 +27,13 @@ func (q *registerRepository) CreateRegistrationData(reg models.RequestRegisterPa
 	}
 
 	if check {
-		helper.ResponseError(q.w, "duplicate entry", "duplicate entry : 400", 400, path)
+		helper.ResponseError(q.w, 0, "duplicate entry", "duplicate entry : 400", 400, path)
 		return fmt.Errorf("duplicate entry")
 	}
 
 	_, err = q.sql.Exec("INSERT INTO registration(care_number, register_number, register_date, medical_record, payment_method, policlinic, doctor) VALUES(?, ?, ?, ?, ?, ?, ?);", reg.CareNumber, reg.RegisterNumber, reg.RegisterDate, reg.MedicalRecord, reg.PaymentMethod, reg.Policlinic, reg.Doctor)
 	if err != nil {
-		helper.ResponseError(q.w, "error request data : check your data", "error data : 400", 400, path)
+		helper.ResponseError(q.w, 0, "error request data : check your data", "error data : 400", 400, path)
 		return fmt.Errorf("error request data")
 	}
 

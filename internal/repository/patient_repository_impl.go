@@ -27,19 +27,19 @@ func (q *patientRepository) CreatePatientData(patient models.PatientData, token 
 	}
 
 	if checkExists {
-		helper.ResponseError(q.w, "duplicate entry", "duplicate entry : 400", 400, path)
+		helper.ResponseError(q.w, 0, "duplicate entry", "duplicate entry : 400", 400, path)
 		return fmt.Errorf("duplicate entry")
 	}
 
 	insert, err := q.sql.Exec("INSERT INTO patients(patients.medical_record, patients.name, patients.gender, patients.wedding, patients.religion, patients.education, patients.birth_place, patients.birth_date, patients.work, patients.address, patients.village, patients.district, patients.regencie, patients.province, patients.nik, patients.bpjs, patients.phone_number, patients.parent_name, patients.relationship, patients.parent_gender) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.Relationship, patient.ParentGender)
 	if err != nil {
-		helper.ResponseError(q.w, "error server", err.Error()+" : 500", 500, path)
+		helper.ResponseError(q.w, 0, "error server", err.Error()+" : 500", 500, path)
 		return err
 	}
 
 	_, err = insert.RowsAffected()
 	if err != nil {
-		helper.ResponseError(q.w, "failed insert data", "failed insert data : 400", 400, path)
+		helper.ResponseError(q.w, 0, "failed insert data", "failed insert data : 400", 400, path)
 		return err
 	}
 
@@ -59,7 +59,7 @@ func (q *patientRepository) GetPatientData(limit string, search string, token st
 
 		err := datas.Scan(&patient.MedicalRecord, &patient.Name, &patient.Gender, &patient.Wedding, &patient.Religion, &patient.Education, &patient.BirthPlace, &patient.BirthDate, &patient.Work, &patient.Address, &patient.Village, &patient.District, &patient.Regencie, &patient.Province, &patient.NIK, &patient.BPJS, &patient.PhoneNumber, &patient.ParentName, &patient.Relationship, &patient.ParentGender)
 		if err != nil {
-			helper.ResponseError(q.w, "error server", err.Error()+" : 500", 500, path)
+			helper.ResponseError(q.w, 0, "error server", err.Error()+" : 500", 500, path)
 			return []models.PatientData{}, err
 		}
 

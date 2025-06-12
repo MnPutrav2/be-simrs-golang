@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/services"
@@ -13,20 +14,36 @@ import (
 )
 
 func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.DB, path string, m string) {
-	if r.Method != m {
-		helper.ResponseError(w, "method not allowed", "method not allowed : 400", 400, path)
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, db, path, m) {
 		return
 	}
 
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, db, auth) {
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, "error create token satu sehat", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error create token satu sehat", err.Error()+" : 400", 400, path)
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseError(w, "empty request body", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "empty request body", err.Error()+" : 400", 400, path)
 		return
 	}
 
@@ -36,9 +53,9 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 	observationService := services.NewSatuSehatObservation(db)
 	res, err := observationService.CreateObservationHeartRate(patient, token)
 	if err != nil {
-		helper.ResponseError(w, "error fetch data", err.Error()+" : 400", 400, path)
+		helper.ResponseError(w, 0, "error fetch data", err.Error()+" : 400", 400, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, "success fetch data", path, res, 200)
+	helper.ResponseSuccess(w, 0, "success fetch data", path, res, 200)
 }

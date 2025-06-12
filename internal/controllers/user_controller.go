@@ -21,18 +21,22 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	token := split[1]
 	userRepo := repository.NewUserRepository(w, r, sql)
@@ -46,7 +50,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "get user status : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get user status : 200", path, s, 200)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -58,18 +62,23 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
+
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	token := split[1]
 
@@ -83,7 +92,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "client logout : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "client logout : 200", path, s, 200)
 }
 
 func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -95,18 +104,23 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
+
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	userRepo := repository.NewUserRepository(w, r, sql)
 
@@ -118,6 +132,6 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, "get pages : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get pages : 200", path, s, 200)
 
 }

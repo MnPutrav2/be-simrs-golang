@@ -21,34 +21,39 @@ func CreateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
 
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
+
 	care, err := helper.GetAmbulatoryRequest(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, "error json format", "error json format : 400", 400, path)
+		helper.ResponseError(w, id, "error json format", "error json format : 400", 400, path)
 		return
 	}
 
 	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
 	err = ambulatoryRepo.CreateAmbulatoryCareData(care)
 	if err != nil {
-		helper.ResponseError(w, "failed create data", err.Error()+": 400", 400, path)
+		helper.ResponseError(w, id, "failed create data", err.Error()+": 400", 400, path)
 		return
 	}
 
 	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
-	helper.ResponseSuccess(w, "create ambulatory care : 201", path, s, 201)
+	helper.ResponseSuccess(w, id, "create ambulatory care : 201", path, s, 201)
 }
 
 func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -60,18 +65,23 @@ func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
+
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	query := r.URL.Query()
 	careNum := query.Get("care-number")
@@ -80,12 +90,12 @@ func DeleteAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
 	err := ambulatoryRepo.DeleteAmbulatoryCareData(careNum, date)
 	if err != nil {
-		helper.ResponseError(w, "failed delete data", err.Error()+": 400", 400, path)
+		helper.ResponseError(w, id, "failed delete data", err.Error()+": 400", 400, path)
 		return
 	}
 
 	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "deleted"})
-	helper.ResponseSuccess(w, "delete ambulatory care : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "delete ambulatory care : 200", path, s, 200)
 }
 
 func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -97,18 +107,23 @@ func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.D
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseError(w, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseError(w, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
+
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	query := r.URL.Query()
 	careNum := query.Get("care-number")
@@ -118,10 +133,10 @@ func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.D
 	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
 	res, err := ambulatoryRepo.GetAmbulatoryCareData(careNum, date1, date2)
 	if err != nil {
-		helper.ResponseError(w, "failed get data", err.Error()+": 400", 400, path)
+		helper.ResponseError(w, id, "failed get data", err.Error()+" : 400", 400, path)
 		return
 	}
 
 	s, _ := json.Marshal(res)
-	helper.ResponseSuccess(w, "get ambulatory care : 200", path, s, 200)
+	helper.ResponseSuccess(w, id, "get ambulatory care : 200", path, s, 200)
 }
