@@ -5,16 +5,16 @@ import (
 	"time"
 )
 
-func Log(m string, path string) string {
+func Log(m string, path string) {
 	t := time.Now()
 	log := fmt.Sprintf("[ %s ] %s %s", t.Format("2006-01-02 15:04:05"), m, path)
 
-	return log
+	fmt.Println(log)
 }
 
-func LogWorker(m string) string {
+func LogWorker(m string) {
 	t := time.Now()
 	log := fmt.Sprintf("[ %s ] %s", t.Format("2006-01-02 15:04:05"), m)
 
-	return log
+	fmt.Println(log)
 }

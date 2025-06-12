@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/handlers"
@@ -48,7 +47,7 @@ func main() {
 	handler("POST", "/satu-sehat/create-observation", handlers.CreateSatuSehatObservation, db)
 	handler("POST", "/satu-sehat/create-clinical-impression", handlers.CreateSatuSehatClinicalImpression, db)
 
-	fmt.Println(helper.LogWorker("[INFO] server runing in port 8080"))
+	helper.LogWorker("[INFO] server runing in port 8080")
 	http.ListenAndServe(":8080", nil)
 }
 

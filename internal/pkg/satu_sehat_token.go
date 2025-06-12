@@ -3,7 +3,6 @@ package pkg
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -49,7 +48,7 @@ func CreateSatuSehatToken(db *sql.DB) (string, error) {
 
 		defer insert.Close()
 
-		fmt.Println(helper.Log("satu sehat token created : 201", "/access_token"))
+		helper.Log("satu sehat token created : 201", "/access_token")
 		return result.AccessToken, nil
 	}
 
@@ -88,12 +87,11 @@ func CreateSatuSehatToken(db *sql.DB) (string, error) {
 
 		defer insert.Close()
 
-		fmt.Println(helper.Log("satu sehat token created : 201", "/access_token"))
+		helper.Log("satu sehat token created : 201", "/access_token")
 		return result.AccessToken, nil
 	}
 
-	fmt.Println(helper.Log("satu sehat token available : 200", "/access_token"))
-
+	helper.Log("satu sehat token available : 200", "/access_token")
 	return token, nil
 }
 

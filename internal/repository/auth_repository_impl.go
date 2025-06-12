@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
@@ -42,7 +41,7 @@ func (q *authRepository) CheckUserToken() error {
 
 			m := "session token user_id : " + exp.UserID + " Deleted"
 
-			fmt.Println(helper.LogWorker(m))
+			helper.LogWorker(m)
 		}
 	}
 

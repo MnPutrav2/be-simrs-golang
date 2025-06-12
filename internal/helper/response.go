@@ -2,7 +2,6 @@ package helper
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -22,11 +21,11 @@ func ResponseError(w http.ResponseWriter, m string, log string, c int, path stri
 
 	w.WriteHeader(c)
 	w.Write(data)
-	fmt.Println(Log(log, path))
+	Log(log, path)
 }
 
 func ResponseSuccess(w http.ResponseWriter, m string, path string, s []byte, c int) {
 	w.WriteHeader(c)
 	w.Write(s)
-	fmt.Println(Log(m, path))
+	Log(m, path)
 }
