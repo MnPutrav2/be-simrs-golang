@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/services"
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
-	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 
@@ -40,5 +40,13 @@ func CreateSatuSehatCondition(w http.ResponseWriter, r *http.Request, db *sql.DB
 		return
 	}
 
-	helper.ResponseSuccess(w, "success fetch data", path, res, 200)
+	if res.Code == 201 {
+		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "success", Response: res.Data})
+
+		helper.ResponseSuccess(w, "success create data", path, dt, 201)
+	} else {
+		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "failed", Response: res.Data})
+
+		helper.ResponseSuccess(w, "failed fetch data : 400", path, dt, 400)
+	}
 }

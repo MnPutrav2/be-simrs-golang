@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/services"
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
-	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 	"github.com/MnPutrav2/be-simrs-golang/internal/pkg"
 )
 

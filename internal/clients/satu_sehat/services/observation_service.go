@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/MnPutrav2/be-simrs-golang/internal/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/models"
 	"github.com/joho/godotenv"
 )
 

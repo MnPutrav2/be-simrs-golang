@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/MnPutrav2/be-simrs-golang/internal/models"
+	"github.com/MnPutrav2/be-simrs-golang/internal/clients/satu_sehat/models"
 	"github.com/joho/godotenv"
 )
 
 type SatuSehatEncounter interface {
-	CreateEncounterData(patient models.EncounterResponse, token string) ([]byte, error)
+	CreateEncounterData(patient models.EncounterResponse, token string) (models.SatuSehatResponseReturn, error)
 }
 
 type satuSehatEncounter struct {
@@ -30,7 +30,7 @@ type Polic struct {
 	SatuSehatID string
 }
 
-func (q *satuSehatEncounter) CreateEncounterData(patient models.EncounterResponse, token string) ([]byte, error) {
+func (q *satuSehatEncounter) CreateEncounterData(patient models.EncounterResponse, token string) (models.SatuSehatResponseReturn, error) {
 	_ = godotenv.Load()
 
 	url := os.Getenv("SATU_SEHAT_END_POINT") + "/Encounter"
@@ -134,12 +134,12 @@ func (q *satuSehatEncounter) CreateEncounterData(patient models.EncounterRespons
 	})
 
 	if err != nil {
-		return nil, err
+		return models.SatuSehatResponseReturn{}, err
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(c))
 	if err != nil {
-		return nil, err
+		return models.SatuSehatResponseReturn{}, err
 	}
 
 	// Tambahkan header Content-Type dan Authorization Bearer
@@ -150,21 +150,26 @@ func (q *satuSehatEncounter) CreateEncounterData(patient models.EncounterRespons
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return models.SatuSehatResponseReturn{}, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return models.SatuSehatResponseReturn{}, err
 	}
 
 	if resp.StatusCode == 201 {
 		var data models.EncounterBodyResponse
 		_ = json.Unmarshal(body, &data)
 
-		return []byte(data.ID), nil
+		return models.SatuSehatResponseReturn{Data: data.ID, Code: 201}, nil
 	}
 
-	return body, nil
+	var response models.SatuSehatErrorResponse
+	_ = json.Unmarshal(body, &response)
+
+	in := response.Issue[0].Details.Text
+
+	return models.SatuSehatResponseReturn{Data: in, Code: 400}, nil
 }
