@@ -34,6 +34,10 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 	}
 	// Check Header
 	// --- ---
+	var id int
+	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
@@ -43,7 +47,7 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		helper.ResponseWarn(w, 0, "empty request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, id, "empty request body", err.Error(), 400, path)
 		return
 	}
 
@@ -53,9 +57,9 @@ func CreateSatuSehatObservation(w http.ResponseWriter, r *http.Request, db *sql.
 	observationService := services.NewSatuSehatObservation(db)
 	res, err := observationService.CreateObservationHeartRate(patient, token)
 	if err != nil {
-		helper.ResponseError(w, 0, "error fetch data", err.Error(), 400, path)
+		helper.ResponseError(w, id, "error fetch data", err.Error(), 400, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, 0, "success fetch data", path, res, 200)
+	helper.ResponseSuccess(w, id, "success fetch data", path, res, 200)
 }

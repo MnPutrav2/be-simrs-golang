@@ -33,6 +33,10 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 	}
 	// Check Header
 	// --- ---
+	var id int
+	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
@@ -45,10 +49,10 @@ func GetSatuSehatPatient(w http.ResponseWriter, r *http.Request, db *sql.DB, pat
 	patientService := services.NewSatuSehatPatient(db, r)
 	data, err := patientService.GetDataPatientByNIK(param.Get("nik"), token)
 	if err != nil {
-		helper.ResponseError(w, 0, "failed fetch data", err.Error(), 400, path)
+		helper.ResponseError(w, id, "failed fetch data", err.Error(), 400, path)
 		return
 	}
 
 	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: data})
-	helper.ResponseSuccess(w, 0, "success get patient id (satu-sehat)", "success get patient id (satu-sehat)", s, 200)
+	helper.ResponseSuccess(w, id, "success get patient id (satu-sehat)", "success get patient id (satu-sehat)", s, 200)
 }

@@ -34,6 +34,10 @@ func CreateSatuSehatCondition(w http.ResponseWriter, r *http.Request, db *sql.DB
 	}
 	// Check Header
 	// --- ---
+	var id int
+	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		return
+	}
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
@@ -53,17 +57,17 @@ func CreateSatuSehatCondition(w http.ResponseWriter, r *http.Request, db *sql.DB
 	conditionService := services.NewSatuSehatCondition(db)
 	res, err := conditionService.CreateSatuSehatCondition(patient, token)
 	if err != nil {
-		helper.ResponseError(w, 0, "error fetch data", err.Error(), 400, path)
+		helper.ResponseError(w, id, "error fetch data", err.Error(), 400, path)
 		return
 	}
 
 	if res.Code == 201 {
 		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "success", Response: res.Data})
 
-		helper.ResponseSuccess(w, 0, "success create data", path, dt, 201)
+		helper.ResponseSuccess(w, id, "success create data", path, dt, 201)
 	} else {
 		dt, _ := json.Marshal(models.SatuSehatToClientResponse{Status: "failed", Response: res.Data})
 
-		helper.ResponseSuccess(w, 0, "failed fetch data", path, dt, 400)
+		helper.ResponseSuccess(w, id, "failed fetch data", path, dt, 400)
 	}
 }
