@@ -46,6 +46,7 @@ func main() {
 	handler("POST", "/satu-sehat/create-condition", handlers.CreateSatuSehatCondition, db)
 	handler("POST", "/satu-sehat/create-observation", handlers.CreateSatuSehatObservation, db)
 	handler("POST", "/satu-sehat/create-clinical-impression", handlers.CreateSatuSehatClinicalImpression, db)
+	handler("POST", "/satu-sehat/create-care-plan", handlers.CreateSatuSehatCarePlan, db)
 
 	// Logs
 	handler("GET", "/logs", controllers.GetLogs, db)
