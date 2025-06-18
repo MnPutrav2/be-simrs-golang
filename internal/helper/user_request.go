@@ -2,7 +2,6 @@ package helper
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -10,17 +9,17 @@ import (
 
 func GetRequestBodyUserAccount(w http.ResponseWriter, r *http.Request, path string) (models.UserAccount, error) {
 	// get client request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
-	}
+	var user models.UserAccount
 
-	// encoding client request body
-	var account models.UserAccount
-	err = json.Unmarshal(body, &account)
+	// Buat decoder dan disallow field yang tidak dikenal
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	// Decode JSON langsung ke struct
+	err := decoder.Decode(&user)
 	if err != nil {
 		return models.UserAccount{}, err
 	}
 
-	return account, nil
+	return user, nil
 }

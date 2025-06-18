@@ -41,7 +41,7 @@ func CreateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 
 	care, err := helper.GetAmbulatoryRequest(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, id, "error json format", "error json format", 400, path)
+		helper.ResponseError(w, id, "invalid json format", err.Error(), 400, path)
 		return
 	}
 
@@ -170,7 +170,7 @@ func UpdateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sq
 
 	care, err := helper.GetAmbulatoryRequestUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, id, "error json format", "error json format", 400, path)
+		helper.ResponseError(w, id, "invalid json format", err.Error(), 400, path)
 		return
 	}
 

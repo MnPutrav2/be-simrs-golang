@@ -2,7 +2,6 @@ package helper
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -10,34 +9,34 @@ import (
 
 func GetAmbulatoryRequest(w http.ResponseWriter, r *http.Request, path string) (models.RequestAmbulatoryCare, error) {
 	// get client request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
-	}
+	var patient models.RequestAmbulatoryCare
 
-	// encoding client request body
-	var care models.RequestAmbulatoryCare
-	err = json.Unmarshal(body, &care)
+	// Buat decoder dan disallow field yang tidak dikenal
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	// Decode JSON langsung ke struct
+	err := decoder.Decode(&patient)
 	if err != nil {
 		return models.RequestAmbulatoryCare{}, err
 	}
 
-	return care, nil
+	return patient, nil
 }
 
 func GetAmbulatoryRequestUpdate(w http.ResponseWriter, r *http.Request, path string) (models.RequestUpdateAmbulatorCare, error) {
 	// get client request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
-	}
+	var patient models.RequestUpdateAmbulatorCare
 
-	// encoding client request body
-	var care models.RequestUpdateAmbulatorCare
-	err = json.Unmarshal(body, &care)
+	// Buat decoder dan disallow field yang tidak dikenal
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	// Decode JSON langsung ke struct
+	err := decoder.Decode(&patient)
 	if err != nil {
 		return models.RequestUpdateAmbulatorCare{}, err
 	}
 
-	return care, nil
+	return patient, nil
 }

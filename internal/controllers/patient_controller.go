@@ -37,7 +37,7 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// get client request body
 	patient, err := helper.GetRequestBodyPatientData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, 0, "empty request body", "empty request body : 400", 400, path)
+		helper.ResponseWarn(w, 0, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
@@ -133,7 +133,7 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 
 	patient, err := helper.GetRequestBodyPatientDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "empty request body", "empty request body", 400, path)
+		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 

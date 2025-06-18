@@ -18,7 +18,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 	// get client request body
 	account, err := helper.GetRequestBodyUserAccount(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, 0, "empty request body", "empty request body", 400, path)
+		helper.ResponseWarn(w, 0, "invalid request body", err.Error(), 400, path)
 		return
 	}
 

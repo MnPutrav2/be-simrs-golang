@@ -41,7 +41,7 @@ func CreateRegistrationPatient(w http.ResponseWriter, r *http.Request, sql *sql.
 	// get client request body
 	body, err := helper.GetRequestBodyRegisterData(w, r, path)
 	if err != nil {
-		helper.ResponseError(w, id, "empty request body", "empty request body", 400, path)
+		helper.ResponseError(w, id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
