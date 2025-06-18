@@ -39,6 +39,7 @@ func main() {
 	handler("POST", "/ambulatory-care/create", controllers.CreateAmbulatoryCarePatient, db)
 	handler("DELETE", "/ambulatory-care/delete", controllers.DeleteAmbulatoryCarePatient, db)
 	handler("GET", "/ambulatory-care/get", controllers.GetAmbulatoryCarePatient, db)
+	handler("PUT", "/ambulatory-care/update", controllers.UpdateAmbulatoryCarePatient, db)
 
 	// Satu Sehat
 	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)

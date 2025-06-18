@@ -48,3 +48,8 @@ func (q *ambulatoryCareRepository) GetAmbulatoryCareData(careNumber string, date
 
 	return datas, nil
 }
+
+func (q *ambulatoryCareRepository) UpdateAmbulatoryCareData(patient models.RequestUpdateAmbulatorCare) error {
+	_, err := q.sql.Exec("UPDATE ambulatory_care SET medical_record = ?, date = ?, body_temperature = ?, tension = ?, pulse = ?, respiration = ?, height = ?, weight = ?, spo2 = ?, gcs = ?, awareness = ?, complaint = ?, examination = ?, allergy = ?, followup = ?, assessment = ?, instructions = ?, evaluation = ?, officer = ? WHERE care_number = ? AND date = ?", patient.Data.MedicalRecord, patient.Data.Date, patient.Data.BodyTemperature, patient.Data.Tension, patient.Data.Pulse, patient.Data.Respiration, patient.Data.Height, patient.Data.Weight, patient.Data.Spo2, patient.Data.GCS, patient.Data.Awareness, patient.Data.Complaint, patient.Data.Examination, patient.Data.Allergy, patient.Data.FollowUp, patient.Data.Assessment, patient.Data.Instructions, patient.Data.Evaluation, patient.Data.Officer, patient.CareNumber, patient.Date)
+	return err
+}

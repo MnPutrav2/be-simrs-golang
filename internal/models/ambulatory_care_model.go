@@ -23,6 +23,12 @@ type RequestAmbulatoryCare struct {
 	Officer         int    `json:"officer"`
 }
 
+type RequestUpdateAmbulatorCare struct {
+	CareNumber string                `json:"care_number"`
+	Date       string                `json:"date"`
+	Data       RequestAmbulatoryCare `json:"data"`
+}
+
 type ResponseAmbulatoryCare struct {
 	CareNumber      string `json:"care_number"`
 	MedicalRecord   string `json:"medical_record"`

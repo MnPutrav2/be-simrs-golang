@@ -140,3 +140,47 @@ func GetAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.D
 	s, _ := json.Marshal(res)
 	helper.ResponseSuccess(w, id, "get ambulatory care", path, s, 200)
 }
+
+func UpdateAmbulatoryCarePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseError(w, 0, "unauthorization", "unauthorization", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseError(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+
+	var id int
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+		panic(err.Error)
+	}
+
+	care, err := helper.GetAmbulatoryRequestUpdate(w, r, path)
+	if err != nil {
+		helper.ResponseError(w, id, "error json format", "error json format", 400, path)
+		return
+	}
+
+	ambulatoryRepo := repository.NewAmbulatoryCareRepository(sql, w, r)
+	err = ambulatoryRepo.UpdateAmbulatoryCareData(care)
+	if err != nil {
+		helper.ResponseError(w, id, "failed create data", err.Error(), 400, path)
+		return
+	}
+
+	s, _ := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "update"})
+	helper.ResponseSuccess(w, id, "update ambulatory care", path, s, 200)
+}
