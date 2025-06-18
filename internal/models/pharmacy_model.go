@@ -4,7 +4,7 @@ type DrugData struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Distributor string `json:"distributor"`
-	Capacity    string `json:"capacity"`
+	Capacity    int    `json:"capacity"`
 	Unit        string `json:"unit"`
 	Category    string `json:"category"`
 	Price       int    `json:"price"`
