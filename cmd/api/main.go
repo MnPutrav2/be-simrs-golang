@@ -41,6 +41,9 @@ func main() {
 	handler("GET", "/ambulatory-care/get", controllers.GetAmbulatoryCarePatient, db)
 	handler("PUT", "/ambulatory-care/update", controllers.UpdateAmbulatoryCarePatient, db)
 
+	// Pharmacy API
+	handler("POST", "/pharmacy/create-drug-data", controllers.CreateDrugDatas, db)
+
 	// Satu Sehat
 	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)
 	handler("POST", "/satu-sehat/create-encounter", handlers.CreateSatuSehatEncounter, db)
