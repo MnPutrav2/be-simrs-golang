@@ -2,13 +2,12 @@ package helper
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/config"
 )
 
-func Log(m string, lev string, id int, path string) {
+func Log(m string, lev string, id string, path string) {
 
 	db := config.SqlDb()
 	defer db.Close()
@@ -16,13 +15,13 @@ func Log(m string, lev string, id int, path string) {
 	t := time.Now()
 	var ty string
 
-	if id == 0 {
+	if id == "" {
 		ty = "[System]"
 	} else {
-		ty = "[User : " + strconv.Itoa(id) + "]"
+		ty = "[User : " + id + "]"
 	}
 
-	if _, err := db.Exec("INSERT INTO logs(users_id, level, message, path) VALUES(?, ?, ?, ?)", id, lev, m, path); err != nil {
+	if _, err := db.Exec("INSERT INTO logs(users_id, level, message, path) VALUES($1, $2, $3, $4)", id, lev, m, path); err != nil {
 		panic(err.Error())
 	}
 

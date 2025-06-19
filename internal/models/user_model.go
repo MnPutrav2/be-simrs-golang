@@ -3,7 +3,7 @@ package models
 import "github.com/google/uuid"
 
 type User struct {
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 }

@@ -20,14 +20,14 @@ func GetLogs(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header

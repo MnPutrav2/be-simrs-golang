@@ -21,14 +21,14 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization : 400", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization : 400", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format : 400", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format : 400", 400, path)
 		return
 	}
 	// Check Header
@@ -37,7 +37,7 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// get client request body
 	patient, err := helper.GetRequestBodyPatientData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, 0, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, "", "invalid request body", err.Error(), 400, path)
 		return
 	}
 
@@ -50,11 +50,11 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
 	if err != nil {
-		helper.ResponseError(w, 0, "error server", err.Error()+" : 500", 500, path)
+		helper.ResponseError(w, "", "error server", err.Error()+" : 500", 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, 0, "create patient : 201", path, s, 201)
+	helper.ResponseSuccess(w, "", "create patient : 201", path, s, 201)
 }
 
 func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -66,20 +66,20 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -114,20 +114,20 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -161,20 +161,20 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -203,20 +203,20 @@ func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 

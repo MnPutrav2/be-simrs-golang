@@ -40,7 +40,7 @@ func (q *authRepository) CheckUserToken() error {
 		}
 
 		if t == exp.Expired {
-			_, err := q.sql.Exec("DELETE FROM session_token WHERE session_token.id = ?", exp.ID)
+			_, err := q.sql.Exec("DELETE FROM session_token WHERE session_token.id = $1", exp.ID)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -58,20 +58,20 @@ func (q *authRepository) CreateSessionToken(us string, pass string) uuid.UUID {
 	var user models.User
 	tm := time.Now()
 	h := tm.Add(6 * time.Hour).Format("2006-01-02 15:04:05")
-	err := q.sql.QueryRow("SELECT users.id, users.username, users.role FROM users WHERE users.username = ? AND users.password = ?", us, pass).Scan(&user.ID, &user.Username, &user.Role)
+	err := q.sql.QueryRow("SELECT users.id, users.username, users.role FROM users WHERE users.username = $1 AND users.password = $2", us, pass).Scan(&user.ID, &user.Username, &user.Role)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	ut := uuid.New()
 	var i int
-	err = q.sql.QueryRow("SELECT COUNT(id) FROM session_token WHERE session_token.users_id = ?", user.ID).Scan(&i)
+	err = q.sql.QueryRow("SELECT COUNT(id) FROM session_token WHERE session_token.users_id = $1", user.ID).Scan(&i)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if i == 0 {
-		insert, err := q.sql.Query("INSERT INTO session_token(users_id, token, expired) VALUES(?, ?, ?)", user.ID, ut, h)
+		insert, err := q.sql.Query("INSERT INTO session_token(users_id, token, expired) VALUES($1, $2, $3)", user.ID, ut, h)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -80,7 +80,7 @@ func (q *authRepository) CreateSessionToken(us string, pass string) uuid.UUID {
 		return ut
 	}
 
-	_, err = q.sql.Exec("UPDATE session_token SET token = ?, expired = ? WHERE session_token.users_id = ?", ut, h, user.ID)
+	_, err = q.sql.Exec("UPDATE session_token SET token = $1, expired = $2 WHERE session_token.users_id = $3", ut, h, user.ID)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -90,7 +90,7 @@ func (q *authRepository) CreateSessionToken(us string, pass string) uuid.UUID {
 
 func (q *authRepository) CheckSessionToken(token string) int {
 	var u int
-	err := q.sql.QueryRow("SELECT COUNT(session_token.id) FROM session_token WHERE session_token.token = ?", token).Scan(&u)
+	err := q.sql.QueryRow("SELECT COUNT(*) FROM session_token WHERE session_token.token = $1", token).Scan(&u)
 	if err != nil {
 		panic(err.Error())
 	}

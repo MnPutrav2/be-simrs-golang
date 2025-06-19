@@ -28,7 +28,7 @@ func NewPatientRepository(w http.ResponseWriter, r *http.Request, sql *sql.DB) P
 
 func (q *patientRepository) CreatePatientData(patient models.PatientData, token string, path string) error {
 	var checkExists bool
-	err := q.sql.QueryRow("SELECT EXISTS(SELECT 1 FROM patients WHERE medical_record = ?)", patient.MedicalRecord).Scan(&checkExists)
+	err := q.sql.QueryRow("SELECT EXISTS(SELECT 1 FROM patients WHERE medical_record = $1)", patient.MedicalRecord).Scan(&checkExists)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -37,9 +37,9 @@ func (q *patientRepository) CreatePatientData(patient models.PatientData, token 
 		return fmt.Errorf("duplicate entry")
 	}
 
-	insert, err := q.sql.Exec("INSERT INTO patients(patients.medical_record, patients.name, patients.gender, patients.wedding, patients.religion, patients.education, patients.birth_place, patients.birth_date, patients.work, patients.address, patients.village, patients.district, patients.regencie, patients.province, patients.nik, patients.bpjs, patients.phone_number, patients.parent_name, patients.relationship, patients.parent_gender) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.Relationship, patient.ParentGender)
+	insert, err := q.sql.Exec("INSERT INTO patients(medical_record, name, gender, wedding, religion, education, birth_place, birth_date, work, address, village, district, regencie, province, nik, bpjs, phone_number, parent_name, relationship, parent_gender) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.Relationship, patient.ParentGender)
 	if err != nil {
-		return err
+		panic(err.Error())
 	}
 
 	_, err = insert.RowsAffected()
@@ -51,7 +51,7 @@ func (q *patientRepository) CreatePatientData(patient models.PatientData, token 
 }
 
 func (q *patientRepository) GetPatientData(limit string, search string, token string, path string) ([]models.PatientData, error) {
-	datas, err := q.sql.Query("SELECT * FROM patients WHERE medical_record LIKE ? OR name LIKE ? ORDER BY medical_record DESC LIMIT ? ", search, search, limit)
+	datas, err := q.sql.Query("SELECT * FROM patients WHERE medical_record LIKE $1 OR name LIKE $2 ORDER BY medical_record DESC LIMIT $3 ", search, search, limit)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -77,12 +77,12 @@ func (q *patientRepository) UpdatePatientData(datas models.PatientDataUpdate) er
 	mr := datas.MedicalRecordKey
 	patient := datas.Update
 
-	_, err := q.sql.Exec("UPDATE patients SET medical_record = ?, name = ?, gender = ?, wedding = ?, religion = ?, education = ?, birth_place = ?, birth_date = ?, work = ?, address = ?, village = ?, district = ?, regencie = ?, province = ?, nik = ?, bpjs = ?, phone_number = ?, parent_name = ?, relationship = ?, parent_gender = ? WHERE medical_record = ?", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.Relationship, patient.ParentGender, mr)
+	_, err := q.sql.Exec("UPDATE patients SET medical_record = $1, name = $2, gender = $3, wedding = $4, religion = $5, education = $6, birth_place = $7, birth_date = $8, work = $9, address = $10, village = $11, district = $12, regencie = $13, province = $14, nik = $15, bpjs = $16, phone_number = $17, parent_name = $18, relationship = $19, parent_gender = $20 WHERE medical_record = $21;", patient.MedicalRecord, patient.Name, patient.Gender, patient.Wedding, patient.Religion, patient.Education, patient.BirthPlace, patient.BirthDate, patient.Work, patient.Address, patient.Village, patient.District, patient.Regencie, patient.Province, patient.NIK, patient.BPJS, patient.PhoneNumber, patient.ParentName, patient.Relationship, patient.ParentGender, mr)
 	return err
 }
 
 func (q *patientRepository) DeletePatientData(mr string) error {
-	_, err := q.sql.Exec("DELETE FROM patients WHERE medical_record = ?", mr)
+	_, err := q.sql.Exec("DELETE FROM patients WHERE medical_record = $1", mr)
 	return err
 }
 

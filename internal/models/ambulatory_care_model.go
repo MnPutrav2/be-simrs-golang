@@ -20,7 +20,7 @@ type RequestAmbulatoryCare struct {
 	Assessment      string `json:"assessment"`
 	Instructions    string `json:"instructions"`
 	Evaluation      string `json:"evaluation"`
-	Officer         int    `json:"officer"`
+	Officer         string `json:"officer"`
 }
 
 type RequestUpdateAmbulatorCare struct {
@@ -50,6 +50,6 @@ type ResponseAmbulatoryCare struct {
 	Assessment      string `json:"assessment"`
 	Instructions    string `json:"instructions"`
 	Evaluation      string `json:"evaluation"`
-	Officer         int    `json:"officer"`
+	Officer         string `json:"officer"`
 	OfficerName     string `json:"officer_name"`
 }

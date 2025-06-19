@@ -48,7 +48,7 @@ func CreateSatuSehatToken(db *sql.DB) (string, error) {
 
 		defer insert.Close()
 
-		helper.Log("satu sehat token created : 201", "INFO", 0, "/access_token")
+		helper.Log("satu sehat token created : 201", "INFO", "", "/access_token")
 		return result.AccessToken, nil
 	}
 
@@ -87,11 +87,11 @@ func CreateSatuSehatToken(db *sql.DB) (string, error) {
 
 		defer insert.Close()
 
-		helper.Log("satu sehat token created : 201", "INFO", 0, "/access_token")
+		helper.Log("satu sehat token created : 201", "INFO", "", "/access_token")
 		return result.AccessToken, nil
 	}
 
-	helper.Log("satu sehat token available : 200", "INFO", 0, "/access_token")
+	helper.Log("satu sehat token available : 200", "INFO", "", "/access_token")
 	return token, nil
 }
 

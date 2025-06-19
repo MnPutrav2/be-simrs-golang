@@ -15,7 +15,7 @@ func CheckRequestHeader(w http.ResponseWriter, r *http.Request, sql *sql.DB, pat
 	}
 
 	if r.Method != m {
-		helper.ResponseError(w, 0, "method not allowed", "method not allowed : 400", 400, path)
+		helper.ResponseError(w, "", "method not allowed", "method not allowed : 400", 400, path)
 		return false
 	}
 	// Check Method

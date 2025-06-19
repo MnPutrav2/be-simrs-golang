@@ -22,20 +22,20 @@ func CreateSatuSehatEncounter(w http.ResponseWriter, r *http.Request, db *sql.DB
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 

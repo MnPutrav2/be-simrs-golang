@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func SqlDb() *sql.DB {
@@ -23,12 +23,12 @@ func SqlDb() *sql.DB {
 	var dsn string
 
 	if pass == "" {
-		dsn = fmt.Sprintf("%s:@tcp(%s)/%s", user, addr, name)
+		dsn = fmt.Sprintf("postgres://%s:@%s/%s?sslmode=disable", user, addr, name)
 	} else {
-		dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s", user, pass, addr, name)
+		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, pass, addr, name)
 	}
 
-	db, err := sql.Open("mysql", dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(err)
 	}

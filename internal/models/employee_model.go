@@ -1,7 +1,7 @@
 package models
 
 type EmployeeData struct {
-	Employee_ID int    `json:"employee_id"`
+	Employee_ID string `json:"employee_id"`
 	Name        string `json:"name"`
 	Gender      string `json:"gender"`
 	BirthPlace  string `json:"birth_place"`

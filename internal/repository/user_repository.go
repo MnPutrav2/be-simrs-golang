@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
 )
 
@@ -25,15 +24,14 @@ func NewUserRepository(w http.ResponseWriter, r *http.Request, sql *sql.DB) User
 }
 
 func (q *userRepository) GetUserPagesData(token string, path string) ([]models.UserPages, error) {
-	var id int
+	var id string
 
-	err := q.sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = ?", token).Scan(&id)
+	err := q.sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = $1", token).Scan(&id)
 	if err != nil {
-		helper.ResponseError(q.w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return nil, err
 	}
 
-	result, err := q.sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.users_id = ?", id)
+	result, err := q.sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.users_id = $1", id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -55,19 +53,17 @@ func (q *userRepository) GetUserPagesData(token string, path string) ([]models.U
 }
 
 func (q *userRepository) GetUserStatus(token string, path string) (models.EmployeeData, error) {
-	var id int
+	var id string
 
-	err := q.sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = ?", token).Scan(&id)
+	err := q.sql.QueryRow("SELECT session_token.users_id FROM session_token WHERE session_token.token = $1", token).Scan(&id)
 	if err != nil {
-		helper.ResponseError(q.w, 0, "unauthorization", "unauthorization : 400", 401, path)
 		return models.EmployeeData{}, err
 	}
 
 	var user models.EmployeeData
 
-	err = q.sql.QueryRow("SELECT employee.id, employee.name, employee.gender, employee.birth_place, employee.birth_date, employee.address, employee.village, employee.district, employee.regencie, employee.province, employee.nik, employee.bpjs, employee.npwp, employee.phone_number, employee.email FROM employee INNER JOIN users ON employee.id = users.employee_id WHERE users.id = ?", id).Scan(&user.Employee_ID, &user.Name, &user.Gender, &user.BirthPlace, &user.BirthDate, &user.Address, &user.Village, &user.District, &user.Regencie, &user.Province, &user.NIK, &user.BPJS, &user.NPWP, &user.PhoneNumber, &user.Email)
+	err = q.sql.QueryRow("SELECT employees.id, employees.name, employees.gender, employees.birth_place, employees.birth_date, employees.address, employees.village, employees.district, employees.regencie, employees.province, employees.nik, employees.bpjs, employees.npwp, employees.phone_number, employees.email FROM employees INNER JOIN users ON employees.id = users.employee_id WHERE users.id = $1", id).Scan(&user.Employee_ID, &user.Name, &user.Gender, &user.BirthPlace, &user.BirthDate, &user.Address, &user.Village, &user.District, &user.Regencie, &user.Province, &user.NIK, &user.BPJS, &user.NPWP, &user.PhoneNumber, &user.Email)
 	if err != nil {
-		helper.ResponseError(q.w, 0, "employee data not found", "employee data not found : 404", 404, path)
 		return models.EmployeeData{}, err
 	}
 
@@ -75,6 +71,6 @@ func (q *userRepository) GetUserStatus(token string, path string) (models.Employ
 }
 
 func (q *userRepository) UserLogout(token string) error {
-	_, err := q.sql.Exec("DELETE FROM session_token WHERE session_token.token = ?", token)
+	_, err := q.sql.Exec("DELETE FROM session_token WHERE session_token.token = $1", token)
 	return err
 }

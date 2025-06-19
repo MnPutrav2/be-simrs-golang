@@ -22,26 +22,26 @@ func CreateSatuSehatClinicalImpression(w http.ResponseWriter, r *http.Request, d
 	// Check Header
 	auth := r.Header.Get("Authorization")
 	if !pkg.CheckAuthorization(w, path, db, auth) {
-		helper.ResponseWarn(w, 0, "unauthorization", "unauthorization", 401, path)
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
 	}
 
 	split := strings.SplitN(auth, " ", 2)
 
 	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, 0, "unauthorization error format", "unauthorization error format", 400, path)
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 	// Check Header
 	// --- ---
-	var id int
-	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = ?", split[1]).Scan(&id); err != nil {
+	var id string
+	if err := db.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	token, err := pkg.CreateSatuSehatToken(db)
 	if err != nil {
-		helper.ResponseError(w, 0, "error create token satu sehat", err.Error(), 400, path)
+		helper.ResponseError(w, "", "error create token satu sehat", err.Error(), 400, path)
 		return
 	}
 
