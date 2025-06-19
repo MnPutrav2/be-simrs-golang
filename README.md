@@ -2,10 +2,10 @@
 
 ## Techstack
 - Golang : https://go.dev/
-- MySQL : https://www.mysql.com/
+- PostgreSQL : https://www.postgresql.org/
 
 ## Library
-- MySQL driver : https://github.com/go-sql-driver/mysql
+- PostgreSQL driver : https://github.com/lib/pq
 - ENV : https://github.com/joho/godotenv
 - uuID : https://github.com/google/uuid
 
