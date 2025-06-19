@@ -43,6 +43,10 @@ func main() {
 
 	// Pharmacy API
 	handler("POST", "/pharmacy/create-drug-data", controllers.CreateDrugDatas, db)
+	handler("GET", "/pharmacy/get-drug-data", controllers.GetDrugDatas, db)
+	handler("PUT", "/pharmacy/update-drug-data", controllers.UpdateDrugDatas, db)
+	handler("DELETE", "/pharmacy/delete-drug-data", controllers.DeleteDrugDatas, db)
+	handler("GET", "/pharmacy/get-distributor", controllers.GetDistributor, db)
 
 	// Satu Sehat
 	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)
