@@ -23,12 +23,12 @@ func NewPharmacyRepository(sql *sql.DB) PharmacyRepository {
 }
 
 func (q *pharmacyRepository) CreateDrugData(drug models.RequestBodyDrugData) error {
-	_, err := q.sql.Exec("INSERT INTO drug_datas(id, name, distributor, capacity, fill, unit, price, category, expired_date) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", drug.ID, drug.Name, drug.Distributor, drug.Capacity, drug.Fill, drug.Unit, drug.Price, drug.Category, drug.ExpiredDate)
+	_, err := q.sql.Exec("INSERT INTO drug_datas(id, name, distributor, capacity, fill, unit, price, category, expired_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)", drug.ID, drug.Name, drug.Distributor, drug.Capacity, drug.Fill, drug.Unit, drug.Price, drug.Category, drug.ExpiredDate)
 	return err
 }
 
 func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.ResponseDrugData, error) {
-	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name LIKE ? ORDER BY drug_datas.id DESC LIMIT ?", search, limit)
+	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name LIKE $1 ORDER BY drug_datas.id DESC LIMIT $2", search, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -49,12 +49,12 @@ func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.Res
 }
 
 func (q *pharmacyRepository) UpdateDrugData(drug models.RequestBodyDrugDataUpdate) error {
-	_, err := q.sql.Exec("UPDATE drug_datas SET id = ?, name = ?, distributor = ?, capacity = ?, fill = ?, unit = ?, price = ?, category = ?, expired_date = ? WHERE id = ?", drug.Data.ID, drug.Data.Name, drug.Data.Distributor, drug.Data.Capacity, drug.Data.Fill, drug.Data.Unit, drug.Data.Price, drug.Data.Category, drug.Data.ExpiredDate, drug.ID)
+	_, err := q.sql.Exec("UPDATE drug_datas SET id = $1, name = $2, distributor = $3, capacity = $4, fill = $5, unit = $6, price = $7, category = $8, expired_date = $9 WHERE id = $10;", drug.Data.ID, drug.Data.Name, drug.Data.Distributor, drug.Data.Capacity, drug.Data.Fill, drug.Data.Unit, drug.Data.Price, drug.Data.Category, drug.Data.ExpiredDate, drug.ID)
 	return err
 }
 
 func (q *pharmacyRepository) DeleteDrugData(id string) error {
-	_, err := q.sql.Exec("DELETE FROM drug_datas WHERE drug_datas.id = ?", id)
+	_, err := q.sql.Exec("DELETE FROM drug_datas WHERE drug_datas.id = $1", id)
 	return err
 }
 
