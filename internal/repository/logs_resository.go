@@ -19,7 +19,7 @@ func NewLogsRepository(sql *sql.DB) LogsRepository {
 }
 
 func (q *logsRepository) GetLogsData(date1 string, date2 string) ([]models.Log, error) {
-	result, err := q.sql.Query("SELECT id, users_id, level, message, path, create_at FROM logs WHERE create_at BETWEEN ? AND ? ORDER BY create_at DESC", date1, date2)
+	result, err := q.sql.Query("SELECT id, users_id, level, message, path, create_at FROM logs WHERE create_at BETWEEN $1 AND $2 ORDER BY create_at DESC", date1, date2)
 	if err != nil {
 		return []models.Log{}, err
 	}
@@ -30,7 +30,7 @@ func (q *logsRepository) GetLogsData(date1 string, date2 string) ([]models.Log, 
 
 		err := result.Scan(&dt.ID, &dt.User, &dt.Level, &dt.Message, &dt.Path, &dt.Date)
 		if err != nil {
-			panic(err.Error())
+			return nil, err
 		}
 
 		data = append(data, dt)

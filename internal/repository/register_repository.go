@@ -31,7 +31,7 @@ func (q *registerRepository) CreateRegistrationData(reg models.RequestRegisterPa
 	var check bool
 	err := q.sql.QueryRow("SELECT EXISTS(SELECT 1 FROM registration WHERE care_number = $1)", reg.CareNumber).Scan(&check)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	if check {
@@ -61,7 +61,7 @@ func (q *registerRepository) GetRegistrationData(date1 string, date2 string, lim
 
 		err := result.Scan(&dt.CareNumber, &dt.RegisterNumber, &dt.RegisterDate, &dt.MedicalRecord, &dt.Name, &dt.Gender, &dt.PaymentMethod, &dt.Policlinic_id, &dt.Policlinic_name, &dt.Doctor_id, &dt.Doctor_name)
 		if err != nil {
-			panic(err.Error())
+			return nil, err
 		}
 
 		datas = append(datas, dt)
@@ -80,7 +80,7 @@ func (q *registerRepository) GetCurrentRegisterNumber(date string, policlinic st
 
 	err := q.sql.QueryRow("SELECT COUNT(*) FROM registration WHERE registration.register_date = $1 AND registration.policlinic = $2", date, policlinic).Scan(&data)
 	if err != nil {
-		panic(err.Error)
+		return 0, err
 	}
 
 	return data, nil
@@ -91,7 +91,7 @@ func (q *registerRepository) GetCurrentCareNumber(date string) (int, error) {
 
 	err := q.sql.QueryRow("SELECT COUNT(*) FROM registration WHERE registration.register_date = $1", date).Scan(&data)
 	if err != nil {
-		panic(err.Error)
+		return 0, err
 	}
 
 	return data, nil

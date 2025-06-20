@@ -47,7 +47,7 @@ func (q *ambulatoryCareRepository) GetAmbulatoryCareData(careNumber string, date
 
 		err = result.Scan(&amb.CareNumber, &amb.MedicalRecord, &amb.Name, &amb.Date, &amb.BodyTemperature, &amb.Tension, &amb.Pulse, &amb.Respiration, &amb.Height, &amb.Weight, &amb.Spo2, &amb.GCS, &amb.Awareness, &amb.Complaint, &amb.Examination, &amb.Allergy, &amb.FollowUp, &amb.Assessment, &amb.Instructions, &amb.Evaluation, &amb.Officer, &amb.OfficerName)
 		if err != nil {
-			panic(err.Error())
+			return nil, err
 		}
 
 		datas = append(datas, amb)

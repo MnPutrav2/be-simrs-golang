@@ -3,6 +3,7 @@ package models
 type RequestAmbulatoryCare struct {
 	CareNumber      string `json:"care_number"`
 	MedicalRecord   string `json:"medical_record"`
+	Name            string `json:"name"`
 	Date            string `json:"date"`
 	BodyTemperature int    `json:"body_temperature"`
 	Tension         string `json:"tension"`
