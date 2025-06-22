@@ -28,7 +28,7 @@ func (q *pharmacyRepository) CreateDrugData(drug models.RequestBodyDrugData) err
 }
 
 func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.ResponseDrugData, error) {
-	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name LIKE $1 ORDER BY drug_datas.id DESC LIMIT $2", search, limit)
+	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name ILIKE $1 ORDER BY drug_datas.id DESC LIMIT $2", search, limit)
 	if err != nil {
 		return nil, err
 	}
