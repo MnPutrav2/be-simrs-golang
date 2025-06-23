@@ -28,7 +28,7 @@ func (q *pharmacyRepository) CreateDrugData(drug models.RequestBodyDrugData) err
 }
 
 func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.ResponseDrugData, error) {
-	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name ILIKE $1 ORDER BY drug_datas.id DESC LIMIT $2", search, limit)
+	result, err := q.sql.Query("SELECT drug_datas.id, drug_datas.name, distributor.id, distributor.name, drug_datas.capacity, drug_datas.fill, drug_datas.unit, drug_datas.composition, drug_datas.price, drug_datas.category, drug_datas.expired_date FROM drug_datas INNER JOIN distributor ON drug_datas.distributor = distributor.id WHERE drug_datas.name ILIKE $1 OR drug_datas.composition ILIKE $2 ORDER BY drug_datas.id DESC LIMIT $3", search, search, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.Res
 	for result.Next() {
 		var dt models.ResponseDrugData
 
-		err := result.Scan(&dt.ID, &dt.Name, &dt.DistributorID, &dt.Distributor, &dt.Capacity, &dt.Fill, &dt.Unit, &dt.Price, &dt.Category, &dt.ExpiredDate)
+		err := result.Scan(&dt.ID, &dt.Name, &dt.DistributorID, &dt.Distributor, &dt.Capacity, &dt.Fill, &dt.Unit, &dt.Composition, &dt.Price, &dt.Category, &dt.ExpiredDate)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func (q *pharmacyRepository) GetDrugData(search string, limit int) ([]models.Res
 }
 
 func (q *pharmacyRepository) UpdateDrugData(drug models.RequestBodyDrugDataUpdate) error {
-	_, err := q.sql.Exec("UPDATE drug_datas SET id = $1, name = $2, distributor = $3, capacity = $4, fill = $5, unit = $6, price = $7, category = $8, expired_date = $9 WHERE id = $10;", drug.Data.ID, drug.Data.Name, drug.Data.Distributor, drug.Data.Capacity, drug.Data.Fill, drug.Data.Unit, drug.Data.Price, drug.Data.Category, drug.Data.ExpiredDate, drug.ID)
+	_, err := q.sql.Exec("UPDATE drug_datas SET id = $1, name = $2, distributor = $3, capacity = $4, fill = $5, unit = $6, composition = $7, price = $8, category = $9, expired_date = $10 WHERE id = $11;", drug.Data.ID, drug.Data.Name, drug.Data.Distributor, drug.Data.Capacity, drug.Data.Fill, drug.Data.Unit, drug.Data.Composition, drug.Data.Price, drug.Data.Category, drug.Data.ExpiredDate, drug.ID)
 	return err
 }
 

@@ -7,6 +7,7 @@ type RequestBodyDrugData struct {
 	Capacity    int    `json:"capacity"`
 	Fill        int    `json:"fill"`
 	Unit        string `json:"unit"`
+	Composition string `json:"composition"`
 	Category    string `json:"category"`
 	Price       int    `json:"price"`
 	ExpiredDate string `json:"expired_date"`
@@ -25,6 +26,7 @@ type ResponseDrugData struct {
 	Capacity      int    `json:"capacity"`
 	Fill          int    `json:"fill"`
 	Unit          string `json:"unit"`
+	Composition   string `json:"composition"`
 	Category      string `json:"category"`
 	Price         int    `json:"price"`
 	ExpiredDate   string `json:"expired_date"`
