@@ -12,6 +12,7 @@ type PharmacyRepository interface {
 	UpdateDrugData(drug models.RequestBodyDrugDataUpdate) error
 	DeleteDrugData(id string) error
 	GetDistributor() ([]models.Distributor, error)
+	CreateRecipe(recipe models.RecipeRequest) error
 }
 
 type pharmacyRepository struct {
@@ -77,4 +78,46 @@ func (q *pharmacyRepository) GetDistributor() ([]models.Distributor, error) {
 	}
 
 	return dis, nil
+}
+
+func (q *pharmacyRepository) CreateRecipe(recipe models.RecipeRequest) error {
+	if recipe.Type == "create" {
+		_, err := q.sql.Exec("INSERT INTO recipes(recipe_id, care_number, date, validate, validate_status, handover) VALUES($1, $2, $3, $4, $5, $6)", recipe.RecipeNumber, recipe.CareNumber, recipe.Date, recipe.Validate, "false", recipe.Handover)
+		if err != nil {
+			return err
+		}
+
+		for _, d := range recipe.Drug {
+			_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", recipe.RecipeNumber, d.DrugID, "false", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	var check bool
+	err := q.sql.QueryRow("SELECT validate_status FROM recipes WHERE recipe_id = $1", recipe.RecipeNumber).Scan(&check)
+	if err != nil {
+		return err
+	}
+
+	if check {
+		for _, d := range recipe.Drug {
+			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", recipe.RecipeNumber, d.DrugID, "true", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		for _, d := range recipe.Drug {
+			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", recipe.RecipeNumber, d.DrugID, "false", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

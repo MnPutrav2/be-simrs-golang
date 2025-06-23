@@ -38,3 +38,19 @@ func GetRequestBodyDrugDataUpdate(w http.ResponseWriter, r *http.Request, path s
 
 	return drug, nil
 }
+
+func GetRequestBodyDrugRecipe(w http.ResponseWriter, r *http.Request, path string) (models.RecipeRequest, error) {
+	var drug models.RecipeRequest
+
+	// Buat decoder dan disallow field yang tidak dikenal
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	// Decode JSON langsung ke struct
+	err := decoder.Decode(&drug)
+	if err != nil {
+		return models.RecipeRequest{}, err
+	}
+
+	return drug, nil
+}
