@@ -15,6 +15,7 @@ type PharmacyRepository interface {
 	CreateRecipe(recipe models.RecipeRequest) (string, error)
 	CreateRecipeCompound(recipe models.RecipeCompoundRequest) (string, error)
 	GetCurrentRecipeNumber(date string) (int, error)
+	AddRecipeNumber(recipe string) (string, error)
 }
 
 type pharmacyRepository struct {
@@ -201,4 +202,14 @@ func (q *pharmacyRepository) GetCurrentRecipeNumber(date string) (int, error) {
 	}
 
 	return current, nil
+}
+
+func (q *pharmacyRepository) AddRecipeNumber(care string) (string, error) {
+	var rec string
+	err := q.sql.QueryRow("SELECT recipe_id FROM recipes WHERE care_number = $1", care).Scan(&rec)
+	if err != nil {
+		return "", err
+	}
+
+	return rec, nil
 }

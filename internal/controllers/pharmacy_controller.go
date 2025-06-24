@@ -375,7 +375,7 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.GetCurrentRecipeNumber(date)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseWarn(w, id, "failed get recipe number", err.Error(), 404, path)
 		return
 	}
 
@@ -385,4 +385,48 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 	}
 
 	helper.ResponseSuccess(w, id, "get current recipe number", path, s, 200)
+}
+
+func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	// Check Header
+	auth := r.Header.Get("Authorization")
+	if !pkg.CheckAuthorization(w, path, sql, auth) {
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
+		return
+	}
+
+	split := strings.SplitN(auth, " ", 2)
+
+	if len(split) != 2 || split[0] != "Bearer" {
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
+		return
+	}
+	// Check Header
+	// --- ---
+	var id string
+	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
+		return
+	}
+
+	var param = r.URL.Query()
+	var care = param.Get("care_number")
+
+	pharmacyRepo := repository.NewPharmacyRepository(sql)
+	res, err := pharmacyRepo.AddRecipeNumber(care)
+	if err != nil {
+		helper.ResponseWarn(w, id, "failed get recipe number", err.Error(), 404, path)
+		return
+	}
+
+	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: res})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	helper.ResponseSuccess(w, id, "get recipe number", path, s, 200)
 }
