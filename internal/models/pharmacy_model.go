@@ -28,6 +28,32 @@ type RecipeRequest struct {
 	Drug         []RecipeDrug `json:"drug"`
 }
 
+type RecipeCompoundRequest struct {
+	CareNumber   string           `json:"care_number"`
+	RecipeNumber string           `json:"recipe_number"`
+	Date         string           `json:"date"`
+	Validate     string           `json:"validate"`
+	Handover     string           `json:"handover"`
+	Type         string           `json:"type"`
+	Recipes      []RecipeCompound `json:"recipes"`
+}
+
+type RecipeCompound struct {
+	RecipeName string               `json:"recipe_name"`
+	Use        string               `json:"use"`
+	Value      int                  `json:"value"`
+	Drug       []RecipeCompoundDrug `json:"drug"`
+}
+
+type RecipeCompoundDrug struct {
+	Name      string `json:"name"`
+	DrugID    string `json:"drug_id"`
+	Value     int    `json:"value"`
+	Embalming int    `json:"embalming"`
+	Tuslah    int    `json:"tuslah"`
+	Price     int    `json:"price"`
+}
+
 type RecipeDrug struct {
 	RecipeID   string `json:"recipe_id"`
 	DrugID     string `json:"drug_id"`
