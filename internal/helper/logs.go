@@ -21,8 +21,10 @@ func Log(m string, lev string, id string, path string) {
 		ty = "[User : " + id + "]"
 	}
 
-	if _, err := db.Exec("INSERT INTO logs(users_id, level, message, path) VALUES($1, $2, $3, $4)", id, lev, m, path); err != nil {
-		panic(err.Error())
+	if lev == "WARN" || lev == "ERROR" {
+		if _, err := db.Exec("INSERT INTO logs(users_id, level, message, path) VALUES($1, $2, $3, $4)", id, lev, m, path); err != nil {
+			panic(err.Error())
+		}
 	}
 
 	log := fmt.Sprintf("[%s] %s %s %s", t.Format("02 January 2006, 15:04:05"), ty, m, path)
