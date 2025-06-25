@@ -16,6 +16,7 @@ type PharmacyRepository interface {
 	CreateRecipeCompound(recipe models.RecipeCompoundRequest) (string, error)
 	GetCurrentRecipeNumber(date string) (int, error)
 	AddRecipeNumber(recipe string) (string, error)
+	GetRecipes(date1 string, date2 string) ([]models.RecipesData, error)
 }
 
 type pharmacyRepository struct {
@@ -212,4 +213,25 @@ func (q *pharmacyRepository) AddRecipeNumber(care string) (string, error) {
 	}
 
 	return rec, nil
+}
+
+func (q *pharmacyRepository) GetRecipes(date1 string, date2 string) ([]models.RecipesData, error) {
+	result, err := q.sql.Query("SELECT recipes.recipe_id, recipes.care_number, patients.name, recipes.date, recipes.validate, recipes.handover FROM recipes INNER JOIN registration ON recipes.care_number = registration.care_number INNER JOIN patients ON registration.medical_record = patients.medical_record WHERE recipes.date::date BETWEEN $1 AND $2", date1, date2)
+	if err != nil {
+		return nil, err
+	}
+
+	var recipes []models.RecipesData
+	for result.Next() {
+		var rec models.RecipesData
+
+		err := result.Scan(&rec.RecipeId, &rec.CareNumber, &rec.Name, &rec.Date, &rec.Validate, &rec.Handover)
+		if err != nil {
+			return nil, err
+		}
+
+		recipes = append(recipes, rec)
+	}
+
+	return recipes, nil
 }

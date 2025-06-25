@@ -330,3 +330,37 @@ func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 
 	helper.ResponseSuccess(w, val.Id, "get recipe number", path, s, 200)
 }
+
+func GetRecipes(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
+		return
+	} else if val.Status == "error_format" {
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
+		return
+	}
+
+	var param = r.URL.Query()
+	var date1 = param.Get("date1")
+	var date2 = param.Get("date2")
+
+	pharmacyRepo := repository.NewPharmacyRepository(sql)
+	data, err := pharmacyRepo.GetRecipes(date1, date2)
+	if err != nil {
+		helper.ResponseWarn(w, val.Id, "failed get recipes data", err.Error(), 404, path)
+		return
+	}
+
+	s, err := json.Marshal(data)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	helper.ResponseSuccess(w, val.Id, "get recipes data", path, s, 200)
+}

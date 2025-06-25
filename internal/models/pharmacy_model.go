@@ -13,6 +13,15 @@ type RequestBodyDrugData struct {
 	ExpiredDate string `json:"expired_date"`
 }
 
+type RecipesData struct {
+	RecipeId   string `json:"recipe_id"`
+	CareNumber string `json:"care_number"`
+	Name       string `json:"name"`
+	Date       string `json:"date"`
+	Validate   string `json:"validate"`
+	Handover   string `json:"handover"`
+}
+
 type RequestBodyDrugDataUpdate struct {
 	ID   string              `json:"id"`
 	Data RequestBodyDrugData `json:"data"`
