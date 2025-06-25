@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -19,45 +18,34 @@ func CreateDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	patient, err := helper.GetRequestBodyDrugData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.CreateDrugData(patient); err != nil {
-		helper.ResponseWarn(w, id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "create drug data", path, s, 201)
+	helper.ResponseSuccess(w, val.Id, "create drug data", path, s, 201)
 }
 
 func GetDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -66,23 +54,12 @@ func GetDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -93,7 +70,7 @@ func GetDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	data, err := pharmacyRepo.GetDrugData(search, limit)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed get drug data", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed get drug data", err.Error(), 404, path)
 		return
 	}
 
@@ -102,7 +79,7 @@ func GetDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get drug data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get drug data", path, s, 200)
 }
 
 func UpdateDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -111,45 +88,34 @@ func UpdateDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	drug, err := helper.GetRequestBodyDrugDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.UpdateDrugData(drug); err != nil {
-		helper.ResponseWarn(w, id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "updated"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "update drug data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "update drug data", path, s, 200)
 }
 
 func DeleteDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -158,23 +124,12 @@ func DeleteDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -183,17 +138,17 @@ func DeleteDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.DeleteDrugData(drug); err != nil {
-		helper.ResponseWarn(w, id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "deleted"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "delete drug data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "delete drug data", path, s, 200)
 }
 
 func GetDistributor(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -202,30 +157,19 @@ func GetDistributor(w http.ResponseWriter, r *http.Request, sql *sql.DB, path st
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	data, err := pharmacyRepo.GetDistributor()
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed distributor data", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed distributor data", err.Error(), 404, path)
 		return
 	}
 
@@ -234,7 +178,7 @@ func GetDistributor(w http.ResponseWriter, r *http.Request, sql *sql.DB, path st
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get distributor data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get distributor data", path, s, 200)
 }
 
 func CreateRecipe(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -243,51 +187,40 @@ func CreateRecipe(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	patient, err := helper.GetRequestBodyDrugRecipe(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.CreateRecipe(patient)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed create recipe", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed create recipe", err.Error(), 404, path)
 		return
 	}
 
 	if res == "duplicate" {
-		helper.ResponseError(w, id, "duplicate entry", "duplicate entry", 500, path)
+		helper.ResponseError(w, val.Id, "duplicate entry", "duplicate entry", 500, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "create recipe success", path, s, 201)
+	helper.ResponseSuccess(w, val.Id, "create recipe success", path, s, 201)
 }
 
 func CreateRecipeCompound(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -296,51 +229,40 @@ func CreateRecipeCompound(w http.ResponseWriter, r *http.Request, sql *sql.DB, p
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	patient, err := helper.GetRequestBodyDrugRecipeCompound(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	stat, err := pharmacyRepo.CreateRecipeCompound(patient)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed create recipe", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed create recipe", err.Error(), 404, path)
 		return
 	}
 
 	if stat == "duplicate" {
-		helper.ResponseError(w, id, "duplicate entry", "duplicate entry", 400, path)
+		helper.ResponseError(w, val.Id, "duplicate entry", "duplicate entry", 400, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "create recipe success", path, s, 201)
+	helper.ResponseSuccess(w, val.Id, "create recipe success", path, s, 201)
 }
 
 func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -349,23 +271,12 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -375,7 +286,7 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.GetCurrentRecipeNumber(date)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed get recipe number", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed get recipe number", err.Error(), 404, path)
 		return
 	}
 
@@ -384,7 +295,7 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get current recipe number", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get current recipe number", path, s, 200)
 }
 
 func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -393,23 +304,12 @@ func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -419,7 +319,7 @@ func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.AddRecipeNumber(care)
 	if err != nil {
-		helper.ResponseWarn(w, id, "failed get recipe number", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "failed get recipe number", err.Error(), 404, path)
 		return
 	}
 
@@ -428,5 +328,5 @@ func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get recipe number", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get recipe number", path, s, 200)
 }

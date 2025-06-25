@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -18,33 +17,24 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, "", "unauthorization", "unauthorization : 400", 401, path)
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
+		return
+	} else if val.Status == "error_format" {
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format : 400", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
 
 	// get client request body
 	patient, err := helper.GetRequestBodyPatientData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, "", "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
-	token := split[1]
-
 	patientRepo := repository.NewPatientRepository(w, r, sql)
-	if err := patientRepo.CreatePatientData(patient, token, path); err != nil {
+	if err := patientRepo.CreatePatientData(patient, val.Id, path); err != nil {
 		return
 	}
 
@@ -63,23 +53,12 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -89,10 +68,8 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	limit := param.Get("limit")
 	search := "%" + param.Get("search") + "%"
 
-	token := split[1]
-
 	patientRepo := repository.NewPatientRepository(w, r, sql)
-	patients, err := patientRepo.GetPatientData(limit, search, token, path)
+	patients, err := patientRepo.GetPatientData(limit, search, val.Token, path)
 	if err != nil {
 		return
 	}
@@ -102,7 +79,7 @@ func GetPatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get patient data ", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get patient data ", path, s, 200)
 }
 
 func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -111,45 +88,34 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	patient, err := helper.GetRequestBodyPatientDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	patientRepo := repository.NewPatientRepository(w, r, sql)
 	if err := patientRepo.UpdatePatientData(patient); err != nil {
-		helper.ResponseWarn(w, id, "patient data not found", err.Error(), 404, path)
+		helper.ResponseWarn(w, val.Id, "patient data not found", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "updated"})
 	if err != nil {
-		helper.ResponseError(w, id, "error server", err.Error(), 500, path)
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
-	helper.ResponseSuccess(w, id, "update patient data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "update patient data", path, s, 200)
 }
 
 func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -158,23 +124,12 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -191,7 +146,7 @@ func DeletePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "delete patient data", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "delete patient data", path, s, 200)
 }
 
 func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -200,23 +155,12 @@ func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
@@ -228,5 +172,5 @@ func GetCurrentMR(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get current MR", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get current MR", path, s, 200)
 }

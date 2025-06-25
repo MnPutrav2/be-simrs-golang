@@ -22,6 +22,11 @@ type UserTokenData struct {
 }
 
 type UserPages struct {
+	Group string       `json:"group"`
+	Path  []PagesGroup `json:"path"`
+}
+
+type PagesGroup struct {
 	Name string `json:"name"`
 	Path string `json:"path"`
 }

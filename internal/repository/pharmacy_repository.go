@@ -196,7 +196,7 @@ func (q *pharmacyRepository) CreateRecipeCompound(recipe models.RecipeCompoundRe
 func (q *pharmacyRepository) GetCurrentRecipeNumber(date string) (int, error) {
 	var current int
 	dt := date + "%"
-	err := q.sql.QueryRow("SELECT COUNT(*) FROM recipes WHERE date = $1", dt).Scan(&current)
+	err := q.sql.QueryRow("SELECT COUNT(*) FROM recipes WHERE date::date = $1", dt).Scan(&current)
 	if err != nil {
 		return 0, err
 	}

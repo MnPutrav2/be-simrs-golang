@@ -31,7 +31,7 @@ func (q *userRepository) GetUserPagesData(token string, path string) ([]models.U
 		return nil, err
 	}
 
-	result, err := q.sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.users_id = $1", id)
+	result, err := q.sql.Query("SELECT DISTINCT user_pages.path_group FROM user_pages WHERE user_pages.users_id = $1", id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -39,14 +39,33 @@ func (q *userRepository) GetUserPagesData(token string, path string) ([]models.U
 	var pageList []models.UserPages
 
 	for result.Next() {
-		var p models.UserPages
+		var p string
 
-		err := result.Scan(&p.Name, &p.Path)
+		err := result.Scan(&p)
 		if err != nil {
 			panic(err.Error())
 		}
 
-		pageList = append(pageList, p)
+		resPage, err := q.sql.Query("SELECT user_pages.name, user_pages.path FROM user_pages WHERE user_pages.path_group = $1", p)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		var page []models.PagesGroup
+		for resPage.Next() {
+			var x models.PagesGroup
+			err := resPage.Scan(&x.Name, &x.Path)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			page = append(page, x)
+		}
+
+		pageList = append(pageList, models.UserPages{
+			Group: p,
+			Path:  page,
+		})
 	}
 
 	return pageList, err

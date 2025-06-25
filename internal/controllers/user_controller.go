@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/MnPutrav2/be-simrs-golang/internal/helper"
 	"github.com/MnPutrav2/be-simrs-golang/internal/models"
@@ -18,29 +17,17 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
-		helper.ResponseWarn(w, "", "unauthorization", "unauthorization : 400", 401, path)
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
+		return
+	} else if val.Status == "error_format" {
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
 
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
-		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format : 400", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
-		return
-	}
-
-	token := split[1]
 	userRepo := repository.NewUserRepository(w, r, sql)
-	status, err := userRepo.GetUserStatus(token, path)
+	status, err := userRepo.GetUserStatus(val.Token, path)
 	if err != nil {
 		return
 	}
@@ -50,7 +37,7 @@ func GetUserStatus(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get user status", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get user status", path, s, 200)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -59,31 +46,17 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
 		return
 	}
-	// Check Header
-	// --- ---
-
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
-		return
-	}
-
-	token := split[1]
 
 	userRepo := repository.NewUserRepository(w, r, sql)
-	if err := userRepo.UserLogout(token); err != nil {
+	if err := userRepo.UserLogout(val.Token); err != nil {
 		panic(err.Error())
 	}
 
@@ -92,7 +65,7 @@ func UserLogout(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "client logout", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "client logout", path, s, 200)
 }
 
 func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
@@ -101,30 +74,18 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		return
 	}
 
-	// Check Header
-	auth := r.Header.Get("Authorization")
-	if !pkg.CheckAuthorization(w, path, sql, auth) {
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
 		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
 		return
-	}
-
-	split := strings.SplitN(auth, " ", 2)
-
-	if len(split) != 2 || split[0] != "Bearer" {
+	} else if val.Status == "error_format" {
 		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
-		return
-	}
-	// Check Header
-	// --- ---
-
-	var id string
-	if err := sql.QueryRow("SELECT users.id FROM users INNER JOIN session_token ON users.id = session_token.users_id WHERE session_token.token = $1", split[1]).Scan(&id); err != nil {
 		return
 	}
 
 	userRepo := repository.NewUserRepository(w, r, sql)
 
-	token := split[1]
+	token := val.Token
 	pageList, _ := userRepo.GetUserPagesData(token, path)
 
 	s, err := json.Marshal(pageList)
@@ -132,6 +93,6 @@ func GetUserPages(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 		panic(err.Error())
 	}
 
-	helper.ResponseSuccess(w, id, "get pages", path, s, 200)
+	helper.ResponseSuccess(w, val.Id, "get pages", path, s, 200)
 
 }
