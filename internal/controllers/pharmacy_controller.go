@@ -29,13 +29,13 @@ func CreateDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 
 	patient, err := helper.GetRequestBodyDrugData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.CreateDrugData(patient); err != nil {
-		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
@@ -70,13 +70,14 @@ func GetDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	data, err := pharmacyRepo.GetDrugData(search, limit)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed get drug data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed get drug data", err.Error(), 404, path)
 		return
 	}
 
 	s, err := json.Marshal(data)
 	if err != nil {
-		panic(err.Error())
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
+		return
 	}
 
 	helper.ResponseSuccess(w, val.Id, "get drug data", path, s, 200)
@@ -99,13 +100,13 @@ func UpdateDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 
 	drug, err := helper.GetRequestBodyDrugDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.UpdateDrugData(drug); err != nil {
-		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
@@ -138,7 +139,7 @@ func DeleteDrugDatas(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	if err := pharmacyRepo.DeleteDrugData(drug); err != nil {
-		helper.ResponseWarn(w, val.Id, "failed create drug data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed create drug data", err.Error(), 404, path)
 		return
 	}
 
@@ -169,7 +170,7 @@ func GetDistributor(w http.ResponseWriter, r *http.Request, sql *sql.DB, path st
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	data, err := pharmacyRepo.GetDistributor()
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed distributor data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed distributor data", err.Error(), 404, path)
 		return
 	}
 
@@ -198,19 +199,19 @@ func CreateRecipe(w http.ResponseWriter, r *http.Request, sql *sql.DB, path stri
 
 	patient, err := helper.GetRequestBodyDrugRecipe(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.CreateRecipe(patient)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed create recipe", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed create recipe", err.Error(), 404, path)
 		return
 	}
 
 	if res == "duplicate" {
-		helper.ResponseError(w, val.Id, "duplicate entry", "duplicate entry", 500, path)
+		helper.ResponseWarn(w, val.Id, "duplicate entry", "duplicate entry", 500, path)
 		return
 	}
 
@@ -240,25 +241,25 @@ func CreateRecipeCompound(w http.ResponseWriter, r *http.Request, sql *sql.DB, p
 
 	patient, err := helper.GetRequestBodyDrugRecipeCompound(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	stat, err := pharmacyRepo.CreateRecipeCompound(patient)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed create recipe", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed create recipe", err.Error(), 404, path)
 		return
 	}
 
 	if stat == "duplicate" {
-		helper.ResponseError(w, val.Id, "duplicate entry", "duplicate entry", 400, path)
+		helper.ResponseWarn(w, val.Id, "duplicate entry", "duplicate entry", 400, path)
 		return
 	}
 
 	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "created"})
 	if err != nil {
-		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
+		helper.ResponseWarn(w, val.Id, "error server", err.Error(), 500, path)
 		return
 	}
 
@@ -286,7 +287,7 @@ func GetCurrentRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB,
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.GetCurrentRecipeNumber(date)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed get recipe number", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed get recipe number", err.Error(), 404, path)
 		return
 	}
 
@@ -319,7 +320,7 @@ func AddRecipeNumber(w http.ResponseWriter, r *http.Request, sql *sql.DB, path s
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	res, err := pharmacyRepo.AddRecipeNumber(care)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed get recipe number", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed get recipe number", err.Error(), 404, path)
 		return
 	}
 
@@ -353,7 +354,7 @@ func GetRecipes(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string
 	pharmacyRepo := repository.NewPharmacyRepository(sql)
 	data, err := pharmacyRepo.GetRecipes(date1, date2)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "failed get recipes data", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "failed get recipes data", err.Error(), 404, path)
 		return
 	}
 

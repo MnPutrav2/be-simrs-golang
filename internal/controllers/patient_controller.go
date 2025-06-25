@@ -29,7 +29,7 @@ func CreatePatient(w http.ResponseWriter, r *http.Request, sql *sql.DB, path str
 	// get client request body
 	patient, err := helper.GetRequestBodyPatientData(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
@@ -99,13 +99,13 @@ func UpdatePatientData(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 
 	patient, err := helper.GetRequestBodyPatientDataUpdate(w, r, path)
 	if err != nil {
-		helper.ResponseWarn(w, val.Id, "invalid request body", err.Error(), 400, path)
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
 		return
 	}
 
 	patientRepo := repository.NewPatientRepository(w, r, sql)
 	if err := patientRepo.UpdatePatientData(patient); err != nil {
-		helper.ResponseWarn(w, val.Id, "patient data not found", err.Error(), 404, path)
+		helper.ResponseError(w, val.Id, "patient data not found", err.Error(), 404, path)
 		return
 	}
 

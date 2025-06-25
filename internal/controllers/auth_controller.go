@@ -27,7 +27,8 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 	var id int
 	err = sql.QueryRow("SELECT COUNT(*) FROM users WHERE users.username = $1 AND users.password = $2", account.Username, account.Password).Scan(&id)
 	if err != nil {
-		panic(err.Error())
+		helper.ResponseError(w, "", "Internal server error", err.Error(), 500, path)
+		return
 	}
 
 	// if account not available
@@ -39,7 +40,8 @@ func AuthUser(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, 
 	// success
 	s, err := json.Marshal(models.AuthResponse{Status: "success", Token: pkg.SessionToken(sql, account.Username, account.Password)})
 	if err != nil {
-		panic(err.Error())
+		helper.ResponseError(w, "", "Internal server error", err.Error(), 500, path)
+		return
 	}
 
 	helper.ResponseSuccess(w, "", "client login", path, s, 201)

@@ -64,7 +64,7 @@ func DeleteRegistrationPatient(w http.ResponseWriter, r *http.Request, sql *sql.
 	registerRepo := repository.NewRegisterRepository(sql, w, r)
 	err := registerRepo.DeleteRegistrationData(query)
 	if err != nil {
-		helper.ResponseError(w, val.Id, "failed delete data", "failed delete data", 400, path)
+		helper.ResponseWarn(w, val.Id, "failed delete data", "failed delete data", 400, path)
 		return
 	}
 
