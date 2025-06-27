@@ -19,6 +19,7 @@ type PharmacyRepository interface {
 	GetRecipes(date1 string, date2 string) ([]models.RecipesData, error)
 	GetDrugRecipes(recipe string) ([]models.RecipeType, error)
 	DeleteDrugRecipes(recipe string, drug string, comname string) error
+	ValidateRecipe(recipe string, validate models.ValidateRecipe) error
 }
 
 type pharmacyRepository struct {
@@ -218,7 +219,7 @@ func (q *pharmacyRepository) AddRecipeNumber(care string) (string, error) {
 }
 
 func (q *pharmacyRepository) GetRecipes(date1 string, date2 string) ([]models.RecipesData, error) {
-	result, err := q.sql.Query("SELECT recipes.recipe_id, recipes.care_number, patients.name, recipes.date, recipes.validate, recipes.handover FROM recipes INNER JOIN registration ON recipes.care_number = registration.care_number INNER JOIN patients ON registration.medical_record = patients.medical_record WHERE recipes.date::date BETWEEN $1 AND $2", date1, date2)
+	result, err := q.sql.Query("SELECT recipes.recipe_id, recipes.care_number, patients.name, recipes.date, recipes.validate, recipes.validate_status, recipes.handover FROM recipes INNER JOIN registration ON recipes.care_number = registration.care_number INNER JOIN patients ON registration.medical_record = patients.medical_record WHERE recipes.date::date BETWEEN $1 AND $2", date1, date2)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +228,7 @@ func (q *pharmacyRepository) GetRecipes(date1 string, date2 string) ([]models.Re
 	for result.Next() {
 		var rec models.RecipesData
 
-		err := result.Scan(&rec.RecipeId, &rec.CareNumber, &rec.Name, &rec.Date, &rec.Validate, &rec.Handover)
+		err := result.Scan(&rec.RecipeId, &rec.CareNumber, &rec.Name, &rec.Date, &rec.Validate, &rec.ValidateStatus, &rec.Handover)
 		if err != nil {
 			return nil, err
 		}
@@ -298,6 +299,20 @@ func (q *pharmacyRepository) DeleteDrugRecipes(recipe string, drug string, comna
 		}
 
 		return nil
+	}
+
+	return nil
+}
+
+func (q *pharmacyRepository) ValidateRecipe(recipe string, validate models.ValidateRecipe) error {
+	_, err := q.sql.Exec("UPDATE recipes SET validate_status = $1, validate = $2 WHERE recipe_id = $3", validate.ValidateStatus, validate.ValidateDate, recipe)
+	if err != nil {
+		return err
+	}
+
+	_, err = q.sql.Exec("UPDATE detail_recipes SET validate_status = $1 WHERE recipe_id = $2", validate.ValidateStatus, recipe)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -14,12 +14,13 @@ type RequestBodyDrugData struct {
 }
 
 type RecipesData struct {
-	RecipeId   string `json:"recipe_id"`
-	CareNumber string `json:"care_number"`
-	Name       string `json:"name"`
-	Date       string `json:"date"`
-	Validate   string `json:"validate"`
-	Handover   string `json:"handover"`
+	RecipeId       string `json:"recipe_id"`
+	CareNumber     string `json:"care_number"`
+	Name           string `json:"name"`
+	Date           string `json:"date"`
+	Validate       string `json:"validate"`
+	ValidateStatus bool   `json:"validate_status"`
+	Handover       string `json:"handover"`
 }
 
 type RequestBodyDrugDataUpdate struct {
@@ -112,4 +113,9 @@ type DetailRecipe struct {
 	Embalming      int    `json:"embalming"`
 	Tuslah         int    `json:"tuslah"`
 	TotalPrice     int    `json:"total_price"`
+}
+
+type ValidateRecipe struct {
+	ValidateStatus bool   `json:"validate_status"`
+	ValidateDate   string `json:"validate_date"`
 }

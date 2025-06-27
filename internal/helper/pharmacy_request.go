@@ -70,3 +70,19 @@ func GetRequestBodyDrugRecipeCompound(w http.ResponseWriter, r *http.Request, pa
 
 	return drug, nil
 }
+
+func GetRequestBodyDrugRecipeValidate(w http.ResponseWriter, r *http.Request, path string) (models.ValidateRecipe, error) {
+	var drug models.ValidateRecipe
+
+	// Buat decoder dan disallow field yang tidak dikenal
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	// Decode JSON langsung ke struct
+	err := decoder.Decode(&drug)
+	if err != nil {
+		return models.ValidateRecipe{}, err
+	}
+
+	return drug, nil
+}

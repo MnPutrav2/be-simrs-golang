@@ -433,3 +433,42 @@ func DeleteDrugRecipes(w http.ResponseWriter, r *http.Request, sql *sql.DB, path
 
 	helper.ResponseSuccess(w, val.Id, "success delete drug data", path, s, 200)
 }
+
+func ValidateRecipe(w http.ResponseWriter, r *http.Request, sql *sql.DB, path string, m string) {
+	// ---- Needed for every request ---
+	if !pkg.CheckRequestHeader(w, r, sql, path, m) {
+		return
+	}
+
+	val := pkg.CheckUserLogin(w, r, sql, path)
+	if val.Status == "authorization" {
+		helper.ResponseWarn(w, "", "unauthorization", "unauthorization", 401, path)
+		return
+	} else if val.Status == "error_format" {
+		helper.ResponseWarn(w, "", "unauthorization error format", "unauthorization error format", 400, path)
+		return
+	}
+
+	var param = r.URL.Query()
+	var recipe = param.Get("recipe_id")
+
+	validate, err := helper.GetRequestBodyDrugRecipeValidate(w, r, path)
+	if err != nil {
+		helper.ResponseError(w, val.Id, "invalid request body", err.Error(), 400, path)
+		return
+	}
+
+	pharmacyRepo := repository.NewPharmacyRepository(sql)
+	if err := pharmacyRepo.ValidateRecipe(recipe, validate); err != nil {
+		helper.ResponseError(w, val.Id, "failed validate recipe", err.Error(), 404, path)
+		return
+	}
+
+	s, err := json.Marshal(models.ResponseDataSuccess{Status: "success", Response: "deleted"})
+	if err != nil {
+		helper.ResponseError(w, val.Id, "error server", err.Error(), 500, path)
+		return
+	}
+
+	helper.ResponseSuccess(w, val.Id, "success validate recipe", path, s, 200)
+}
