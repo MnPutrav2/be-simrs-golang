@@ -92,3 +92,24 @@ type Distributor struct {
 	Name    string `json:"name"`
 	Address string `json:"address"`
 }
+
+type RecipeType struct {
+	RecipeType   string         `json:"recipe_type"`
+	CompoundName string         `json:"compound_name"`
+	Data         []DetailRecipe `json:"data"`
+}
+
+type DetailRecipe struct {
+	RecipeID       string `json:"recipe_id"`
+	DrugID         string `json:"drug_id"`
+	DrugName       string `json:"drug_name"`
+	ValidateStatus bool   `json:"validate_status"`
+	CompoundName   string `json:"compound_name"`
+	CompoundValue  int    `json:"compound_value"`
+	RecipeType     string `json:"recipe_type"`
+	Value          int    `json:"value"`
+	Use            string `json:"use"`
+	Embalming      int    `json:"embalming"`
+	Tuslah         int    `json:"tuslah"`
+	TotalPrice     int    `json:"total_price"`
+}

@@ -17,6 +17,8 @@ type PharmacyRepository interface {
 	GetCurrentRecipeNumber(date string) (int, error)
 	AddRecipeNumber(recipe string) (string, error)
 	GetRecipes(date1 string, date2 string) ([]models.RecipesData, error)
+	GetDrugRecipes(recipe string) ([]models.RecipeType, error)
+	DeleteDrugRecipes(recipe string, drug string, comname string) error
 }
 
 type pharmacyRepository struct {
@@ -102,7 +104,7 @@ func (q *pharmacyRepository) CreateRecipe(recipe models.RecipeRequest) (string, 
 		}
 
 		for _, d := range recipe.Drug {
-			_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "false", "-", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "false", "com", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
 			if err != nil {
 				return "", err
 			}
@@ -119,14 +121,14 @@ func (q *pharmacyRepository) CreateRecipe(recipe models.RecipeRequest) (string, 
 
 	if check {
 		for _, d := range recipe.Drug {
-			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "true", "-", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "true", "com", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
 			if err != nil {
 				return "", err
 			}
 		}
 	} else {
 		for _, d := range recipe.Drug {
-			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "false", "-", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
+			_, err := q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, d.DrugID, "false", "com", "common", d.Value, d.Use, d.Embalming, d.Tuslah, d.TotalPrice)
 			if err != nil {
 				return "", err
 			}
@@ -155,7 +157,7 @@ func (q *pharmacyRepository) CreateRecipeCompound(recipe models.RecipeCompoundRe
 
 		for _, d := range recipe.Recipes {
 			for _, x := range d.Drug {
-				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, x.DrugID, "false", d.RecipeName, "compound", d.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
+				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, compound_value, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", recipe.RecipeNumber, x.DrugID, "false", d.RecipeName, d.Value, "compound", x.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
 				if err != nil {
 					return "", err
 				}
@@ -174,7 +176,7 @@ func (q *pharmacyRepository) CreateRecipeCompound(recipe models.RecipeCompoundRe
 	if check {
 		for _, d := range recipe.Recipes {
 			for _, x := range d.Drug {
-				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, x.DrugID, "true", d.RecipeName, "compound", d.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
+				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, compound_value, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", recipe.RecipeNumber, x.DrugID, "true", d.RecipeName, d.Value, "compound", x.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
 				if err != nil {
 					return "", err
 				}
@@ -183,7 +185,7 @@ func (q *pharmacyRepository) CreateRecipeCompound(recipe models.RecipeCompoundRe
 	} else {
 		for _, d := range recipe.Recipes {
 			for _, x := range d.Drug {
-				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", recipe.RecipeNumber, x.DrugID, "false", d.RecipeName, "compound", d.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
+				_, err = q.sql.Exec("INSERT INTO detail_recipes (recipe_id, drug_id, validate_status, compound_name, compound_value, recipe_type, value, use, embalming, tuslah, total_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", recipe.RecipeNumber, x.DrugID, "false", d.RecipeName, d.Value, "compound", x.Value, d.Use, x.Embalming, x.Tuslah, x.Price)
 				if err != nil {
 					return "", err
 				}
@@ -234,4 +236,69 @@ func (q *pharmacyRepository) GetRecipes(date1 string, date2 string) ([]models.Re
 	}
 
 	return recipes, nil
+}
+
+func (q *pharmacyRepository) GetDrugRecipes(recipe string) ([]models.RecipeType, error) {
+	var recipeDatas []models.RecipeType
+
+	check, err := q.sql.Query("SELECT DISTINCT compound_name, recipe_type FROM detail_recipes WHERE recipe_id = $1", recipe)
+	if err != nil {
+		return nil, err
+	}
+
+	for check.Next() {
+		var typ models.RecipeType
+
+		err := check.Scan(&typ.CompoundName, &typ.RecipeType)
+		if err != nil {
+			return nil, err
+		}
+
+		result, err := q.sql.Query("SELECT detail_recipes.recipe_id, detail_recipes.drug_id, drug_datas.name, detail_recipes.validate_status, detail_recipes.compound_name,  COALESCE(detail_recipes.compound_value, 0) AS compoundvalue, detail_recipes.recipe_type, detail_recipes.value, detail_recipes.use, detail_recipes.embalming, detail_recipes.tuslah, detail_recipes.total_price FROM detail_recipes INNER JOIN drug_datas ON detail_recipes.drug_id = drug_datas.id WHERE detail_recipes.recipe_id = $1 AND detail_recipes.compound_name = $2", recipe, typ.CompoundName)
+		if err != nil {
+			return nil, err
+		}
+
+		var drugs []models.DetailRecipe
+		for result.Next() {
+			var drug models.DetailRecipe
+
+			err := result.Scan(&drug.RecipeID, &drug.DrugID, &drug.DrugName, &drug.ValidateStatus, &drug.CompoundName, &drug.CompoundValue, &drug.RecipeType, &drug.Value, &drug.Use, &drug.Embalming, &drug.Tuslah, &drug.TotalPrice)
+			if err != nil {
+				return nil, err
+			}
+
+			drugs = append(drugs, drug)
+		}
+
+		typ.Data = append(typ.Data, drugs...)
+
+		recipeDatas = append(recipeDatas, typ)
+	}
+
+	return recipeDatas, nil
+}
+
+func (q *pharmacyRepository) DeleteDrugRecipes(recipe string, drug string, comname string) error {
+	_, err := q.sql.Exec("DELETE FROM detail_recipes WHERE recipe_id = $1 AND drug_id = $2 AND compound_name = $3", recipe, drug, comname)
+	if err != nil {
+		return err
+	}
+
+	var length int
+	err = q.sql.QueryRow("SELECT COUNT(*) FROM detail_recipes WHERE recipe_id = $1", recipe).Scan(&length)
+	if err != nil {
+		return err
+	}
+
+	if length == 0 {
+		_, err := q.sql.Exec("DELETE FROM recipes WHERE recipe_id = $1", recipe)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	return nil
 }

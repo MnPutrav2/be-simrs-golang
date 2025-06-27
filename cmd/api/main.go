@@ -52,6 +52,8 @@ func main() {
 	handler("GET", "/pharmacy/get-current-recipe-number", controllers.GetCurrentRecipeNumber, db)
 	handler("GET", "/pharmacy/get-recipe-number", controllers.AddRecipeNumber, db)
 	handler("GET", "/pharmacy/get-recipe-data", controllers.GetRecipes, db)
+	handler("GET", "/pharmacy/get-all-drug-recipe", controllers.GetDrugRecipes, db)
+	handler("DELETE", "/pharmacy/delete-drug-recipes", controllers.DeleteDrugRecipes, db)
 
 	// Satu Sehat
 	handler("GET", "/satu-sehat/get-patient-by-nik", handlers.GetSatuSehatPatient, db)
